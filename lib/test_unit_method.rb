@@ -8,21 +8,27 @@ class TestUnitMethod
     @lines << line
   end
 
-  def assigns_variable?(line)
-    line =~ /=/
+  def self.assigns_variable?(line)  # todo: extract to line class
+    line =~ /[^=]=[^=]/
   end
 
-  def text_from_expression(line, i)
-    expected = expected(i)
+  def self.assertion(expected, line)     # todo: extract to assertion class
     if expected && assigns_variable?(line)
       line
     elsif expected && expected == line # type not supported, assume object inequality
-      "assert_not_equal((#{expected}), #{line})" 
+      "assert_not_equal((#{expected}), #{line})"
+    elsif expected == "true" # use simple assert() for true boolean expressions
+      "assert(#{line})"
     elsif expected
       "assert_equal(#{expected}, #{line})"
     else
       nil
     end
+  end
+
+  def text_from_expression(line, i)
+    expected = expected(i)
+    TestUnitMethod.assertion(expected, line)
   end
 
   def text(method_name)
@@ -36,7 +42,8 @@ class TestUnitMethod
 
   def expected(current_i)
 
-    commands = @lines[current_i]
+    current_line = @lines[current_i]
+    commands = current_line
     start_i = current_i
 
     begin
@@ -53,15 +60,10 @@ class TestUnitMethod
       end
     end
 
-    # todo: continue to implement cases for all possible types, or something better..
-    if retval.nil?
-      "nil"
-    elsif retval.is_a? String
-      "\"#{retval}\""
-    elsif retval.is_a? Fixnum
-      retval
+    if eval "(#{current_line}) == (#{current_line})" # returned object supports value equality
+      retval.inspect
     else
-      @lines[current_i] # return any other sort of object for now, for a not equal assertion
+      current_line # return any other sort of object for now, for a not equal assertion
     end
 
   end
