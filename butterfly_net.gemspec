@@ -4,19 +4,30 @@ SPEC = Gem::Specification.new do |s|
   s.version = "0.0.1"
   s.author = "Chris Smith"
   s.email = "quartzmo@gmail.com"
-  s.homepage = "http://github.com/quartzmo"
-  s.rubyforge_project = "utility_belt"
-  s.platform = Gem::Platform::RUBY
-  s.summary = "A grab-bag of IRB power user madness."
+  s.homepage = "http://github.com/quartzmo/butterfly_net"
+  s.summary = "Record your IRB sessions as Test::Unit tests. (RSpec and others hopefully soon to come.)"
+  s.description = <<EOF
+INSTALL
+
+    Butterfly Net is available for download as a gem from github.com.
+
+    sudo gem install butterfly_net
+
+    To automatically load add Butterfly Net on every IRB session, add the following to your ~/.irbrc:
+
+    require 'rubygems'
+    require 'butterfly_net'
+
+USAGE
+
+    Command shortcuts available in IRC:
+
+    bn  - open a new Butterfly Net test case, with optional file name string ('.rb' will be appended if not present)
+    bnc - close Butterfly Net test case, writing output file
+
+EOF
   s.files = Dir.glob("**/*")
-  %w{amazon google pastie}.each do |command_line_utility|
-    s.executables << command_line_utility
-  end
   s.require_path = "lib"
-  s.test_file = "spec/utility_belt_spec.rb"
-  s.has_rdoc = true
-  s.extra_rdoc_files = ["README"]
-  s.add_dependency("wirble", ">= 0.1.2")
-  s.add_dependency("aws-s3", ">= 0.4.0")
-  s.add_dependency("Platform", ">= 0.4.0")
+  s.test_file = "test/butterfly_net_tests.rb"
+  s.has_rdoc = false
 end

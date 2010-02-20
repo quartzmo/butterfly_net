@@ -1,8 +1,7 @@
 #
 # Command shortcuts:
 #
-# bn  - open new Butterfly Net test case, with optional name
-# bna - end existing assertion set (test method) and begin a new assertion set, with optional name
+# bn  - open a new Butterfly Net test case, with optional name
 # bnc - close Butterfly Net test case, writing output file
 # bns - add preceding line to setup method, instead of current assertion set           # todo
 # bnt - add preceding line to teardown method, instead of current assertion set        # todo
