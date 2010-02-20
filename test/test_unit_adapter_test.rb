@@ -1,9 +1,12 @@
 require "test/unit"
-require "../lib/test_unit_method"
-require "../lib/test_unit_adapter"
+$: << File.expand_path(File.dirname(__FILE__))
+$: << File.join(File.expand_path(File.dirname(__FILE__)), File.join("..", "lib"))
+require "butterfly_net/test_unit_method"
+require "butterfly_net/test_unit_adapter"
 
 class TestUnitAdapterTest < Test::Unit::TestCase
-
+  include ButterflyNet
+  
   def setup
     @adapter = TestUnitAdapter.new
   end
