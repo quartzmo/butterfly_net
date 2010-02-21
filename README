@@ -8,7 +8,7 @@ butterfly_net
 
 DESCRIPTION
 
-    IRB history captured as Test::Unit tests. (RSpec and others hopefully soon to come.)
+    IRB and Rails console history captured as Test::Unit tests. (RSpec and others hopefully soon to come.)
 
 INSTALL
 
@@ -23,8 +23,9 @@ USAGE
 
     Command methods:
 
-    bn, bn_open    - Open an active test case, with optional string arg file_name ('.rb' is appended if needed)
+    bn, bn_open    - Open a new test case, closing the current test case if one exists. Args: file_name:string (optional; '.rb' will appended if needed)
     bnc, bn_close  - Close the active test case, and write the output to a file
+    m, bn_close  - Close the active test case, and write the output to a file
 
     Ruby on Rails console:
 

@@ -1,12 +1,18 @@
 module ButterflyNet
   class TestUnitMethod
 
+    attr_accessor :name
+
     def initialize
-      @lines = []
+      @commands = []
     end
 
     def <<(line)
-      @lines << line
+      @commands << line
+    end
+
+    def name=(name)
+      @name = underscore(name)
     end
 
     def self.simple_assignment_only?(line)  # todo: extract to line class
@@ -31,18 +37,19 @@ module ButterflyNet
       expected_assertion(i)
     end
 
-    def text(method_name)
-      method_string = "def test_#{method_name}\n"
-      @lines.each_with_index do |line, i|
+    def text(position)
+      lines_string = ""
+      @commands.each_with_index do |line, i|
         text = text_from_expression(line, i)
-        method_string += "    #{text}\n" if text
+        lines_string += "    #{text}\n" if text
       end
-      method_string += "  end"
+      method_name = @name ? (@name =~ /^test_/ ? @name : "test_#{@name}") : "test_#{position}"
+      lines_string.empty? ? nil : "def #{method_name}\n#{lines_string}  end"
     end
 
     def expected_assertion(current_i)
 
-      current_line = @lines[current_i]
+      current_line = @commands[current_i]
       commands = current_line
       start_i = current_i
 
@@ -50,7 +57,7 @@ module ButterflyNet
         retval = eval commands
       rescue
         start_i -= 1
-        commands = @lines[start_i..current_i].join("\n")
+        commands = @commands[start_i..current_i].join("\n")
 
         if start_i < 0
           puts "failure evaluating: eval[#{start_i}..#{current_i}] : #{commands}\n"
@@ -83,6 +90,19 @@ module ButterflyNet
     def instances_equal_by_value?(instance)
       instance == instance.dup rescue true  # can't dup Fixnum, et al...
     end
+
+    private
+
+    # Adapted from ActiveSupport Inflector
+    def underscore(name)
+      name.to_s.strip.
+              gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
+              gsub(/([a-z\d])([A-Z])/, '\1_\2').
+              tr("-", "_").
+              tr(" ", "_").
+              downcase
+    end
+
 
 
   end

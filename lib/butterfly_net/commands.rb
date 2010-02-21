@@ -21,8 +21,9 @@ module ButterflyNet
       file_name += ".rb" unless file_name =~ /.rb$/
       @file = FileWriter.new(file_name, start_index)
       Kernel.at_exit { puts @file.close if @file; @file = nil }
-      puts "butterfly_net: #{file_name} opened at Readline::HISTORY ##{start_index}"
       true
+    rescue
+      false
     end
 
     def bn_close
@@ -37,9 +38,20 @@ module ButterflyNet
       end
     end
 
+    def bn_method(method_name=nil)
+      check_for_readline
+      if @file
+        @file.new_assertion_set(method_name)
+      else
+        puts "butterfly_net: First invoke 'bn' or 'bn_open' to begin a session"
+        false
+      end
+    end
+
 
     alias :bn :bn_open
     alias :bnc :bn_close
+    alias :m :bn_method
 
     private
 

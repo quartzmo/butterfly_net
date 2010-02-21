@@ -98,6 +98,26 @@ class TestUnitMethodTest < Test::Unit::TestCase
     assert !TestUnitMethod.simple_assignment_only?("a *= 1")
   end
 
+  def test_name_uppercase
+    @method.name = "MYMETHOD"
+    assert_equal("mymethod", @method.name)
+  end
+
+  def test_name_camelcase
+    @method.name = "MyMethod"
+    assert_equal("my_method", @method.name)
+  end
+
+  def test_name_hyphenated
+    @method.name = "my-Method"
+    assert_equal("my_method", @method.name)
+  end
+
+  def test_name_spaces
+    @method.name = " my Method "
+    assert_equal("my_method", @method.name)
+  end
+
 
   def test_expected_boolean
     line = "1 == 1"
@@ -175,6 +195,31 @@ class TestUnitMethodTest < Test::Unit::TestCase
     @method << line
     assert_nil @method.text_from_expression(line, 0)
   end
+
+  def test_text
+    @method << "1 + 1"
+    assert_equal "def test_1\n    assert_equal(2, 1 + 1)\n  end", @method.text(1)
+  end
+
+
+
+  def test_text_bad_input
+    @method << "BADCOMMAND"
+    assert_nil @method.text(1)
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   # non-project tests (scratchpad)
 

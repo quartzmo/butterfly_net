@@ -46,9 +46,23 @@ class TestUnitAdapterTest < Test::Unit::TestCase
     @adapter.add_command("1 + 1")
     @adapter.close_assertion_set
     @adapter.add_command("1 + 2")
-    expected = "def test_2\n    assert_equal(3, 1 + 2)\n  end"
     @adapter.test_methods
-    assert_equal expected, @adapter.test_methods.last
+    assert_equal "def test_1\n    assert_equal(2, 1 + 1)\n  end", @adapter.test_methods.first
+    assert_equal "def test_2\n    assert_equal(3, 1 + 2)\n  end", @adapter.test_methods.last
+  end
+
+  def test_test_methods_naming
+    @adapter.add_command("1 + 1")
+    @adapter.close_assertion_set 'test_one_plus_one'
+    @adapter.test_methods
+    assert_equal "def test_one_plus_one\n    assert_equal(2, 1 + 1)\n  end", @adapter.test_methods.first
+  end
+
+  def test_test_methods_naming_prepends_test
+    @adapter.add_command("1 + 1")
+    @adapter.close_assertion_set 'one_plus_one'
+    @adapter.test_methods
+    assert_equal "def test_one_plus_one\n    assert_equal(2, 1 + 1)\n  end", @adapter.test_methods.first
   end
   
   def test_create_file
@@ -56,7 +70,8 @@ class TestUnitAdapterTest < Test::Unit::TestCase
     expected  = <<-EOF
 require "test/unit"
 
-class TempTest < Test::Unit::TestCase
+# IRB test capture courtesy of butterfly_net (butterflynet.org)
+class MyTest < Test::Unit::TestCase
 
   def test_1
     assert_equal(2, 1 + 1)
@@ -64,7 +79,7 @@ class TempTest < Test::Unit::TestCase
 
 end
     EOF
-    @adapter.create_file('temp_test.rb')
+    @adapter.create_file('temp_test.rb')   # todo: write to memory instead of file...
     assert_equal expected, File.open('temp_test.rb').readlines.join('')
   end
 

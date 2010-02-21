@@ -12,20 +12,25 @@ module ButterflyNet
       @assertion_sets.last << line
     end
 
-    def close_assertion_set
+    def close_assertion_set(method_name = nil)
+      @assertion_sets.last.name = method_name if method_name
       @assertion_sets << TestUnitMethod.new
     end
 
+    def empty?
+      @assertion_sets.empty?
+    end
+
     def create_file(filename)
-      return nil if @assertion_sets.empty?
+      return nil if empty?
 
       #todo detect existing file, and delete last 'end' line
       file = File.open(filename, 'a+')  # starts at end of file if file exists
 
       if defined? ActiveSupport::TestCase # rails  # todo support earlier versions of rails
-        file.puts "require \"test_helper\"\n\nclass TempTest < ActiveSupport::TestCase"
+        file.puts "require \"test_helper\"\n\n# script/console test capture courtesy of butterfly_net (butterflynet.org)\nclass MyTest < ActiveSupport::TestCase"
       else
-        file.puts "require \"test/unit\"\n\nclass TempTest < Test::Unit::TestCase"
+        file.puts "require \"test/unit\"\n\n# IRB test capture courtesy of butterfly_net (butterflynet.org)\nclass MyTest < Test::Unit::TestCase"
       end
 
       test_methods.each do |test_method|
@@ -45,7 +50,8 @@ module ButterflyNet
       @assertion_sets.each_with_index do |assertions, i|
 
 
-        method_strings << assertions.text(i + 1)
+        method_string = assertions.text(i + 1)
+        method_strings << method_string if method_string
       end
       method_strings
     end
