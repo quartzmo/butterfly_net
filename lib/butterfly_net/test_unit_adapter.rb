@@ -18,16 +18,26 @@ module ButterflyNet
 
     def create_file(filename)
       return nil if @assertion_sets.empty?
-      file = File.open(filename, 'w+')
-      file.puts "require \"test/unit\"\n\nclass TempTest < Test::Unit::TestCase"
+
+      #todo detect existing file, and delete last 'end' line
+      file = File.open(filename, 'a+')  # starts at end of file if file exists
+
+      if defined? ActiveSupport::TestCase # rails  # todo support earlier versions of rails
+        file.puts "require \"test_helper\"\n\nclass TempTest < ActiveSupport::TestCase"
+      else
+        file.puts "require \"test/unit\"\n\nclass TempTest < Test::Unit::TestCase"
+      end
 
       test_methods.each do |test_method|
         file.puts "\n  #{test_method}"
       end
 
-      file.puts "\nend"
     ensure
-      file.close if file # todo: closing is good, but prevent writing partial data in case of exception
+      if file # todo: closing is always good, but prevent writing partial data in case of exception
+        file.puts "\nend"
+        file.close
+      end
+
     end
 
     def test_methods

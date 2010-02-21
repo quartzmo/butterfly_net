@@ -10,29 +10,94 @@ class TestUnitMethodTest < Test::Unit::TestCase
     @method = TestUnitMethod.new
   end
 
-  def test_assigns_variable_true
-     assert TestUnitMethod.assigns_variable? "a=1"
+  def test_simple_assignment_only_true
+     assert TestUnitMethod.simple_assignment_only? "a=1"
   end
 
-  def test_assigns_variable_true_whitespace
-     assert TestUnitMethod.assigns_variable? "a = 1"
+#  def test_simple_assignment_only_true_orequals          todo: solve orequals in regex
+#     assert TestUnitMethod.simple_assignment_only? "a ||= 1"
+#  end
+
+  def test_simple_assignment_only_true_whitespace
+     assert TestUnitMethod.simple_assignment_only? "a = 1"
   end
 
-  def test_assigns_variable_true_contains_equals
-     assert TestUnitMethod.assigns_variable? "a = (1 == 1)"
+  def test_simple_assignment_only_true_contains_equals
+     assert TestUnitMethod.simple_assignment_only? "a = (1 == 1)"
   end
 
-  def test_assigns_variable_false
-     assert !TestUnitMethod.assigns_variable?("a + 1")
+  def test_simple_assignment_only_false
+     assert !TestUnitMethod.simple_assignment_only?("a + 1")
   end
 
-  def test_assigns_variable_false_with_equals
-     assert !TestUnitMethod.assigns_variable?("a == 1")
+  def test_simple_assignment_only_false_with_equals
+     assert !TestUnitMethod.simple_assignment_only?("a == 1")
   end
 
-  def test_assigns_variable_false_threequals
-     assert !TestUnitMethod.assigns_variable?("a===1")
+  def test_simple_assignment_only_false_threequals
+     assert !TestUnitMethod.simple_assignment_only?("a===1")
   end
+
+  def test_simple_assignment_only_false_regex
+    assert !TestUnitMethod.simple_assignment_only?("'a' =~ /a/")
+  end
+
+  def test_simple_assignment_only_false_regex
+    assert !TestUnitMethod.simple_assignment_only?("'a' =~ /a/")
+  end
+
+  def test_simple_assignment_only_false_lessthanequals
+    assert !TestUnitMethod.simple_assignment_only?("1 <= 1")
+  end
+
+  def test_simple_assignment_only_false_greaterthanequals
+    assert !TestUnitMethod.simple_assignment_only?("1 >= 1")
+  end
+
+  def test_simple_assignment_only_false_flyingsaucer
+    assert !TestUnitMethod.simple_assignment_only?("1 <=> 1")
+  end
+
+  def test_simple_assignment_only_false_notequal
+    assert !TestUnitMethod.simple_assignment_only?("1 != 0")
+  end
+
+  def test_simple_assignment_only_false_modequal
+    assert !TestUnitMethod.simple_assignment_only?("a %= 1")
+  end
+
+  def test_simple_assignment_only_false_orequal
+    assert !TestUnitMethod.simple_assignment_only?("a |= 1")
+  end
+
+  def test_simple_assignment_only_false_plusequal
+    assert !TestUnitMethod.simple_assignment_only?("a += 1")
+  end
+
+  def test_simple_assignment_only_false_minusequal
+    assert !TestUnitMethod.simple_assignment_only?("a -= 1")
+  end
+
+  def test_simple_assignment_only_false_divideequal
+    assert !TestUnitMethod.simple_assignment_only?("a /= 1")
+  end
+
+  def test_simple_assignment_only_false_andequal
+    assert !TestUnitMethod.simple_assignment_only?("a &= 1")
+  end
+
+  def test_simple_assignment_only_false_shiftrightequal
+    assert !TestUnitMethod.simple_assignment_only?("a >>= 1")
+  end
+
+  def test_simple_assignment_only_false_shiftleftequal
+    assert !TestUnitMethod.simple_assignment_only?("a <<= 1")
+  end
+
+  def test_simple_assignment_only_false_timesequal
+    assert !TestUnitMethod.simple_assignment_only?("a *= 1")
+  end
+
 
   def test_expected_boolean
     line = "1 == 1"

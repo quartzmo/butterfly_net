@@ -9,12 +9,12 @@ module ButterflyNet
       @lines << line
     end
 
-    def self.assigns_variable?(line)  # todo: extract to line class
-      line =~ /[^=]=[^=]/
+    def self.simple_assignment_only?(line)  # todo: extract to line class
+      line =~ /[^=<>!*%\/+-\\|&]=[^=~]/
     end
 
     def self.assertion(expected, line)     # todo: extract to assertion class
-      if expected && assigns_variable?(line)
+      if expected && simple_assignment_only?(line)
         line
       elsif expected && expected == line # type not supported, assume object inequality
         "assert_not_equal((#{expected}), #{line})"
@@ -59,7 +59,7 @@ module ButterflyNet
           retry
         end
       end
-      if retval && TestUnitMethod.assigns_variable?(current_line)
+      if retval && TestUnitMethod.simple_assignment_only?(current_line)
         current_line
 
       elsif instances_equal_by_value?(retval) # expression result supports value equality

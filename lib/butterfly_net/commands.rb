@@ -10,8 +10,12 @@ module ButterflyNet
   module Commands
 
     def bn_open(file_name=nil)
+
+
       @file.close if @file
       check_for_readline
+      # todo: if Rails, WARNING if env is not test
+
       start_index = Readline::HISTORY.empty? ? 0 : (Readline::HISTORY.size - 1)
       file_name ||= "butterfly_net_#{Time.now.strftime("%Y%m%d%H%M%S")}.rb"
       file_name += ".rb" unless file_name =~ /.rb$/
