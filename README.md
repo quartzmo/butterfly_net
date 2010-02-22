@@ -43,32 +43,36 @@ To automatically require Butterfly Net on every IRB session, add the following t
 
 ### Command methods
 
-The following commands can be used in any IRB-based console. The longer names have been provided in case of naming conflicts.
+The following commands can be used in any IRB-based console. The shortcuts should be preferred, the longer aliases exist in case of naming conflicts.
 
-* `bn`, `bn_open`       Open a new test case, closing the current test case if one exists. Args: file_name:string (optional; '.rb' will appended if needed)
+* `bn(file_name=nil)`, `bn_open(file_name=nil)`       Open a new test case, closing the current test case if one exists. Args: file_name:string (optional; '.rb' will appended if needed)
 * `bnc`, `bn_close`     Close the active test case, and write the output to a file.
-* `m`, `bn_method`      Close the current test method (or block), naming it with the arg method_name:string (optional)
+* `m(method_name=nil)`, `bn_method(method_name=nil)`      Close the current test method (or block), naming it with the arg method_name:string (optional)
 
 ### Example Usage in IRB
 
     $ irb
-    irb(main):001:0> bn 'irb_tests'
+    irb(main):001:0> require 'rubygems'
     => true
-    irb(main):002:0> a = 1
+    irb(main):002:0> require 'butterfly_net'
+    => true
+    irb(main):003:0> bn 'irb_tests'
+    => true
+    irb(main):004:0> a = 1
     => 1
-    irb(main):003:0> a += 2
+    irb(main):005:0> a += 2
     => 3
-    irb(main):004:0> m 'plusequals'
+    irb(main):006:0> m 'plusequals'
     => true
-    irb(main):005:0> require 'bigdecimal'
+    irb(main):007:0> require 'bigdecimal'
     => true
-    irb(main):006:0> infinity = BigDecimal('Infinity')
+    irb(main):008:0> infinity = BigDecimal('Infinity')
     => #<BigDecimal:114ed34,'Infinity',4(4)>
-    irb(main):007:0> BigDecimal.new("1.0") / BigDecimal.new("0.0") == infinity
+    irb(main):009:0> BigDecimal.new("1.0") / BigDecimal.new("0.0") == infinity
     => true
-    irb(main):008:0> m 'bigdecimal_infinity'
+    irb(main):010:0> m 'bigdecimal_infinity'
     => true
-    irb(main):009:0> exit
+    irb(main):011:0> exit
     butterfly_net: irb_tests.rb closed
     true
     $ cat irb_tests.rb
@@ -187,8 +191,11 @@ Switching to Ruby, I found IRB to be a much better tool, but as with all great c
 Although I generally program in a test-first style, I naturally like to exercise existing code after it is written,
 kicking the tires and banging on the doors. With JUnit, any interesting behavior I discovered during this process was captured in a
 test, and was duly added to the suite. With IRB? Gone, flown off into the deep blue. The idea for Butterfly Net
-occurred to me pretty quickly. That's the story, so far. I'm not sure how others will use Butterfly Net, but I don't want to limit the possibilities. 
-Hopefully it will only become more generalized and flexible with time.
+occurred to me pretty quickly. That's the story, so far. I'm not sure how others will use Butterfly Net, but I don't
+want to limit the possibilities. Should it become more generalized and flexible, something of a view framework like [Hirb](http://github.com/cldwalker/hirb)?
+Or did I just re-create something that already existed? 
+
+Please send comments and suggestions to quartzmo -at- gmail.com
 
 
 ## License
