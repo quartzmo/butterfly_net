@@ -1,9 +1,11 @@
 Butterfly Net
 =============
 
-Author: Chris Smith
-Email: quartzmo -at- gmail.com
 Project homepage: http://www.butterflynet.org
+
+Author: Chris Smith
+
+Author email: quartzmo -at- gmail.com
 
 
 ## DESCRIPTION
