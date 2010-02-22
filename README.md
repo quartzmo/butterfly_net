@@ -9,12 +9,22 @@ Author: Chris Smith (quartzmo -at- gmail.com)
 [RubyGems page](http://rubygems.org/gems/butterfly_net)
 
 
-## DESCRIPTION
+## Summary
 
 IRB and Rails console history captured as fully executable Test::Unit tests. (RSpec and others hopefully soon to come.)
 
+## Description
 
-## INSTALL
+Butterfly Net is intended to help you capture, as tests, surprising or unexpected behavior that you come across while
+interacting with your project code in IRB.
+
+** Warning **
+
+Butterfly Net does not support [test-first](http://www.extremeprogramming.org/rules/testfirst.html) development, and is
+not intended as a primary tool for [Test-Driven Development(TDD)](http://en.wikipedia.org/wiki/Test-driven_development).
+Read more about how it is meant to be used in Story, below.
+
+## Install
 
 Butterfly Net is available as a gem from [rubygems.org](http://rubygems.org/gems/butterfly_net), or as source from
 [GitHub](http://github.com/quartzmo/butterfly_net).
@@ -29,7 +39,7 @@ To automatically require Butterfly Net on every IRB session, add the following t
     require 'butterfly_net'
 
 
-## USAGE
+## Usage
 
 ### Command methods
 
@@ -109,7 +119,7 @@ For example:
     1 tests, 1 assertions, 0 failures, 0 errors
 
 
-## KNOWN ISSUES
+## Known Issues
 
 This section covers issues which may not be resolved quickly. Feel free to lend a hand!
 
@@ -150,7 +160,27 @@ In order to avoid this issue, just put assignments (and anything that looks like
 from statements you want to be tested with assertions.
 
 
-## LICENSE
+## Story
+
+Coming to Ruby from Java, I felt The Console (IRB) was like a magical English butler, always there discreetly
+at my side to instantly and precisely answer any question. How incredible!
+
+In my pre-Ruby days, JUnit was my preferred tool for answering code questions, both about my own project code and about
+third-party code. As anyone who has worked on a legacy (ie, testless) codebase, or experienced
+java.util.Calendar knows, the tighter the feedback loop, the sooner you get your answers. Experimenting with code behavior through an
+application UI is only for the foolish (or those who bill by the hour on government projects.)
+JUnit tests were the fastest path that I had to seeing what code did in real life. With IntelliJ IDEA generating the
+boilerplate at a keystroke, it is a quick and very acceptable tool. When I was done learning and experimenting, I deleted most of the tests,
+in accordance with the idea that less is better, and that you don't need to run automated regression tests for stable, third-party code.
+
+Switching to Ruby, I found IRB to be a much better tool, but as with all great conveniences, it had a downside.
+Although I generally practice a test-first style, I naturally like to exercise existing code after it is written,
+kicking the tires, if you will. With JUnit, any interesting behavior I discovered during this process was captured in a
+test, and was duly added to the suite. With The Console? Gone, flown off into the deep blue. The idea for Butterfly Net
+occurred to me pretty quickly. That's the story. I'm not sure how others will use it, but I would love to hear. 
+
+
+## License
 
 The MIT License
 
