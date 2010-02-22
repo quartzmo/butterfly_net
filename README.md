@@ -179,21 +179,21 @@ Coming to Ruby from Java, I felt "The Console" was like a magical English butler
 at my side to instantly and precisely answer all my questions. How incredible!
 
 In Java, JUnit had been my preferred tool for exploring code, both my own project code and
-third-party libraries and frameworks. As anyone who has worked on a legacy (testless) codebase, or experienced
+third-party libraries and frameworks. As anyone who has worked on a legacy (i.e., test-deprived) codebase or experienced
 java.util.Calendar knows, the tighter the feedback loop, the sooner you get your answers. Experimenting with code behavior through an
-application UI is only for the foolish (or those who bill by the hour on government projects.)
+application UI is only for the foolish, or those racking up billable hours on a big waterfall project.
 JUnit tests were usually the fastest way I could experience what code did in real life, and with IntelliJ IDEA generating the
-boilerplate at a keystroke, such exploratory testing was quick and very acceptable. When I was done learning and
-experimenting, I deleted most of the tests, in accordance with the idea that less is better, and that you don't need to
-run your own automated regression tests for stable, third-party code.
+boilerplate at a keystroke, exploratory testing was quick and very acceptable. When I was done learning and
+experimenting, I deleted most of the tests, in accordance with the idea that less is better, and you shouldn't
+run automated regression tests for stable, third-party code.
 
 Switching to Ruby, I found IRB to be a much better tool, but as with all great conveniences, it had a downside.
-Although I generally program in a test-first style, I naturally like to exercise existing code after it is written,
+Although I generally program in a test-first style, I also explore existing code after it is written,
 kicking the tires and banging on the doors. With JUnit, any interesting behavior I discovered during this process was captured in a
-test, and was duly added to the suite. With IRB? Gone, flown off into the deep blue. The idea for Butterfly Net
+test, and was duly added to the suite. With IRB? Gone, flown off into the deep blue yonder. The idea for Butterfly Net
 occurred to me pretty quickly. That's the story, so far. I'm not sure how others will use Butterfly Net, but I don't
-want to limit the possibilities. Should it become more generalized and flexible, something of a view framework like [Hirb](http://github.com/cldwalker/hirb)?
-Or did I just re-create something that already existed? 
+want to limit the possibilities. Should it become more generalized and flexible, something of a view framework like
+[Hirb](http://github.com/cldwalker/hirb)? Or did I re-invent something that already existed? 
 
 Please send comments and suggestions to quartzmo -at- gmail.com
 
