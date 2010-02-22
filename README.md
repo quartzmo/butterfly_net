@@ -115,22 +115,22 @@ This section covers issues which may not be resolved quickly. Feel free to lend 
 
 ### The return value of the inspect method is not valid code
 
-Butterfly Net relies on an expectation value responding with valid Ruby code to the inspect method, which is the case for core
-classes such as Hash and Array. However, it's not the case with most classes, many of which respond with the familiar
-`#<...>` notation, which isn't interpreted.
+Currently, the expectation that Butterfly Net places into an assertion is the output of an object's inspect method. Core
+classes such as Hash and Array return executable code, which works great. Unfortunately, most classes respond with the familiar
+`#<...>` notation, which can't be interpreted.
 
 For example:
 
     assert_equal(#<BigDecimal:11511d8,'Infinity',4(24)>, BigDecimal.new("1.0") / BigDecimal.new("0.0"))  # doesn't work
 
 The workaround is to assign expected values to a variable. Of course, you have to know what to expect in order to do this, 
-which may take a few tries. Sorry.
+which may take a few tries. Sorry. I'll be working on a solution to this one.
 
 
 ### Assigning a variable, even in a string, results in no assertion for that line 
 
-To keep tests readable, assignments such as "a = 1" should be written without enclosing assertions.
-In some cases, however, this causes Butterfly Net to miss statements that should be tested.
+To keep tests readable, Butterfly Net writes simple assignments such as "a = 1" without enclosing assertions.
+However, the regex it uses to make this exception can cause Butterfly Net to miss some tests.
 
 For example:
 
