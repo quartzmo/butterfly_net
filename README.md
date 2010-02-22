@@ -1,21 +1,23 @@
 Butterfly Net
 =============
 
-[Home page and source download](http://butterflynet.org)
-[RubyGems page](http://rubygems.org/gems/butterfly_net)
 
 Author: Chris Smith (quartzmo -at- gmail.com)
+
+[Home page and source download](http://github.com/quartzmo/butterfly_net)
+
+[RubyGems page](http://rubygems.org/gems/butterfly_net)
 
 
 ## DESCRIPTION
 
-IRB and Rails console history captured as Test::Unit tests. (RSpec and others hopefully soon to come.)
+IRB and Rails console history captured as fully executable Test::Unit tests. (RSpec and others hopefully soon to come.)
 
 
 ## INSTALL
 
 Butterfly Net is available as a gem from [rubygems.org](http://rubygems.org/gems/butterfly_net), or as source from
-[butterflynet.org](http://butterflynet.org).
+[GitHub](http://github.com/quartzmo/butterfly_net).
 
 To install the gem:
 
@@ -31,11 +33,11 @@ To automatically require Butterfly Net on every IRB session, add the following t
 
 ### Command methods
 
-The following commands can be used in any IRB-based console.
+The following commands can be used in any IRB-based console. The longer names have been provided in case of naming conflicts.
 
-* bn, bn_open- Open a new test case, closing the current test case if one exists. Args: file_name:string (optional; '.rb' will appended if needed)
-* bnc, bn_close  - Close the active test case, and write the output to a file.
-* m, bn_method   - Close the current test method (or block), naming it with the arg method_name:string (optional)
+* `bn`, `bn_open`       Open a new test case, closing the current test case if one exists. Args: file_name:string (optional; '.rb' will appended if needed)
+* `bnc`, `bn_close`     Close the active test case, and write the output to a file.
+* `m`, `bn_method`      Close the current test method (or block), naming it with the arg method_name:string (optional)
 
 ### Example Usage in IRB
 
@@ -88,7 +90,7 @@ The following commands can be used in any IRB-based console.
 
 ### Ruby on Rails console
 
-For repeatable tests, be sure to load the Rails test environment with "./script/console test". Invoke the `bn` command 
+For repeatable tests, be sure to load the Rails test environment with `./script/console test`. Invoke the `bn` command
 with the relative path to the appropriate test sub-directory, and file name. (Hint: In a Rails project, you can run an 
 individual test by adding the test directory to the path with the option -I when you invoke Ruby.)
 
@@ -111,7 +113,7 @@ For example:
 
 This section covers issues which may not be resolved quickly. Feel free to lend a hand!
 
-### Object inspect output
+### The return value of the inspect method is not valid code
 
 Butterfly Net relies on an expectation value responding with valid Ruby code to the inspect method, which is the case for core
 classes such as Hash and Array. However, it's not the case with most classes, many of which respond with the familiar
@@ -125,10 +127,10 @@ The workaround is to assign expected values to a variable. Of course, you have t
 which may take a few tries. Sorry.
 
 
-### Inline variable assignment
+### Assigning a variable, even in a string, results in no assertion for that line 
 
-Butterfly Net tries to detect simple assignments, such as "a = 1", in order to write them out clearly,
-without enclosing assertions. In some cases this causes it to miss statements that should be tested.
+To keep tests readable, assignments such as "a = 1" should be written without enclosing assertions.
+In some cases, however, this causes Butterfly Net to miss statements that should be tested.
 
 For example:
 
@@ -140,11 +142,12 @@ For example:
 results in
 
     def test_1
-      a = 1; a + 1  # should have been a = 1; assert_equal(2, a + 1)
-      "a=1".split('=')  # should have been assert_equal(["a", "1"],"a=1".split('='))
+      a = 1; a + 1           # should have been a = 1; assert_equal(2, a + 1)
+      "a=1".split('=')       # should have been assert_equal(["a", "1"],"a=1".split('='))
     end
 
-In order to avoid this issue, just put assignments (and anything that looks like an assignment) on separate lines.
+In order to avoid this issue, just put assignments (and anything that looks like an assignment) on separate lines 
+from statements you want to be tested with assertions.
 
 
 ## LICENSE
