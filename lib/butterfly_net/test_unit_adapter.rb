@@ -13,7 +13,7 @@ module ButterflyNet
     end
 
     def close_assertion_set(method_name = nil)
-      @assertion_sets.last.name = method_name if method_name
+      @assertion_sets.last.name = (method_name ? method_name : @assertion_sets.size)
       @assertion_sets << TestUnitMethod.new
     end
 
@@ -33,6 +33,7 @@ module ButterflyNet
         file.puts "require \"test/unit\"\n\n# IRB test capture courtesy of butterfly_net (butterflynet.org)\nclass MyTest < Test::Unit::TestCase"
       end
 
+
       test_methods.each do |test_method|
         file.puts "\n  #{test_method}"
       end
@@ -46,14 +47,8 @@ module ButterflyNet
     end
 
     def test_methods
-      method_strings = []
-      @assertion_sets.each_with_index do |assertions, i|
-
-
-        method_string = assertions.text(i + 1)
-        method_strings << method_string if method_string
-      end
-      method_strings
+      @assertion_sets.last.name = @assertion_sets.size unless @assertion_sets.last.name # done here for testing     
+      @assertion_sets.collect {|i| i.text }.compact
     end
 
   end

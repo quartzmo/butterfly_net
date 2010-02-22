@@ -12,7 +12,8 @@ module ButterflyNet
     end
 
     def name=(name)
-      @name = underscore(name)
+      name = underscore(name)
+      @name = name =~ /^test_/ ? name : "test_#{name}"
     end
 
     def self.simple_assignment_only?(line)  # todo: extract to line class
@@ -33,21 +34,17 @@ module ButterflyNet
       end
     end
 
-    def text_from_expression(line, i)
-      expected_assertion(i)
-    end
-
-    def text(position)
+    def text
+      purge_bad_commands
       lines_string = ""
-      @commands.each_with_index do |line, i|
-        text = text_from_expression(line, i)
+      @commands.each_index do |i|
+        text = assertion(i)
         lines_string += "    #{text}\n" if text
       end
-      method_name = @name ? (@name =~ /^test_/ ? @name : "test_#{@name}") : "test_#{position}"
-      lines_string.empty? ? nil : "def #{method_name}\n#{lines_string}  end"
+      lines_string.empty? ? nil : "def #{@name}\n#{lines_string}  end"
     end
 
-    def expected_assertion(current_i)
+    def assertion(current_i)
 
       current_line = @commands[current_i]
       commands = current_line
@@ -55,12 +52,12 @@ module ButterflyNet
 
       begin
         retval = eval commands
-      rescue
+      rescue Exception
         start_i -= 1
         commands = @commands[start_i..current_i].join("\n")
 
         if start_i < 0
-          puts "failure evaluating: eval[#{start_i}..#{current_i}] : #{commands}\n"
+          puts "Failed to evaluate command sequence: '#{commands}'"
           return nil
         else
           retry
@@ -89,6 +86,24 @@ module ButterflyNet
 
     def instances_equal_by_value?(instance)
       instance == instance.dup rescue true  # can't dup Fixnum, et al...
+    end
+
+
+    def purge_bad_commands
+      begin
+        commands = ""
+        index = 0
+        @commands.each_with_index do |current_line, i|
+          index = i
+          commands += current_line + "\n"
+          eval commands
+        end
+
+      rescue Exception
+        # delete offender and start again from the beginning
+        @commands.delete_at index
+      end
+      nil
     end
 
     private

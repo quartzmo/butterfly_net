@@ -28,8 +28,9 @@ module ButterflyNet
 
         true
       end
-    rescue Exception => msg
-      puts "butterfly_net:  Error generating tests: #{msg}"
+    rescue Exception => e
+      puts "butterfly_net:  Error generating tests: #{e}"
+      puts e.backtrace
       false
     end
 
@@ -57,8 +58,9 @@ module ButterflyNet
 
         true
   #    end
-    rescue Exception => msg
-      puts "butterfly_net:  Error generating tests: #{msg}"
+    rescue Exception => e
+      puts "butterfly_net:  Error generating tests: #{e}"
+      puts e.backtrace
       false
     end
 

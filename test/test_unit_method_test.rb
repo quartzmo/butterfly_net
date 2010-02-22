@@ -8,6 +8,7 @@ class TestUnitMethodTest < Test::Unit::TestCase
 
   def setup
     @method = TestUnitMethod.new
+    @method.name = "1"
   end
 
   def test_simple_assignment_only_true
@@ -100,41 +101,68 @@ class TestUnitMethodTest < Test::Unit::TestCase
 
   def test_name_uppercase
     @method.name = "MYMETHOD"
-    assert_equal("mymethod", @method.name)
+    assert_equal("test_mymethod", @method.name)
   end
 
   def test_name_camelcase
     @method.name = "MyMethod"
-    assert_equal("my_method", @method.name)
+    assert_equal("test_my_method", @method.name)
   end
 
   def test_name_hyphenated
     @method.name = "my-Method"
-    assert_equal("my_method", @method.name)
+    assert_equal("test_my_method", @method.name)
   end
 
   def test_name_spaces
     @method.name = " my Method "
-    assert_equal("my_method", @method.name)
+    assert_equal("test_my_method", @method.name)
   end
+
+  def test_test_methods_naming_no_changes
+    @method.name = 'test_one_plus_one'
+    assert_equal("test_one_plus_one", @method.name)
+  end
+
+  def test_test_methods_naming_prepends_test
+    @method.name = 'one_plus_one'
+    assert_equal("test_one_plus_one", @method.name)
+  end
+
+  def test_purge_unexpected_identifier
+    @method << "a = 1"
+    @method << "2b" # syntax error, unexpected tIDENTIFIER, expecting $end
+    @method << "a += 1"
+    @method.purge_bad_commands
+    assert_equal "def test_1\n    a = 1\n    assert_equal(2, a += 1)\n  end", @method.text
+  end
+
+  def test_purge_unexpected_identifiers
+    @method << "a += 1"  # undefined method `+' for nil:NilClass
+    @method << "a = 1"
+    @method << "a += 1"
+    @method.purge_bad_commands
+    assert_equal "def test_1\n    a = 1\n    assert_equal(2, a += 1)\n  end", @method.text
+  end
+
 
 
   def test_expected_boolean
     line = "1 == 1"
     @method << line
-    assert_equal("assert(#{line})", @method.expected_assertion(0))
+    assert_equal("assert(#{line})", @method.assertion(0))
   end
 
   def test_assertion_fixnum
     line = "1"
     @method << line
-    assert_equal("assert_equal(#{line}, #{line})", @method.expected_assertion(0))
+    assert_equal("assert_equal(#{line}, #{line})", @method.assertion(0))
   end
 
   def test_assertion_boolean_false
     line = "1 != 1"
     @method << line
-    assert_equal("assert_equal(false, #{line})", @method.expected_assertion(0))
+    assert_equal("assert_equal(false, #{line})", @method.assertion(0))
   end
 
 
@@ -143,13 +171,13 @@ class TestUnitMethodTest < Test::Unit::TestCase
     @method << "a = []"
     line2 = "a << \"1\""
     @method << line2
-    assert_equal("assert_equal([\"1\"], #{line2})", @method.expected_assertion(1))
+    assert_equal("assert_equal([\"1\"], #{line2})", @method.assertion(1))
   end
 
   def test_butterfly_net
     @method << "method = TestUnitMethod.new"
     @method << "method << \"1 + 1\""
-    assert_equal("assert_equal([\"1 + 1\"], method << \"1 + 1\")", @method.expected_assertion(1))
+    assert_equal("assert_equal([\"1 + 1\"], method << \"1 + 1\")", @method.assertion(1))
   end
 
 
@@ -157,55 +185,55 @@ class TestUnitMethodTest < Test::Unit::TestCase
   def test_text_from_expression_boolean
     line = "1 == 1"
     @method << line
-    assert_equal("assert(#{line})", @method.text_from_expression(line, 0))
+    assert_equal("assert(#{line})", @method.assertion(0))
   end
 
   def test_text_from_expression_string
     line = "'a' + 'b'"
     @method << line
-    assert_equal("assert_equal(\"ab\", #{line})", @method.text_from_expression(line, 0))
+    assert_equal("assert_equal(\"ab\", #{line})", @method.assertion(0))
   end
 
   def test_text_from_expression_nil
     line = "[].first"
     @method << line
-    assert_equal("assert_nil(#{line})", @method.text_from_expression(line, 0))
+    assert_equal("assert_nil(#{line})", @method.assertion(0))
   end
 
   def test_text_from_expression_boolean
     line = "1 == 1"
     @method << line
-    assert_equal("assert(#{line})", @method.text_from_expression(line, 0))
+    assert_equal("assert(#{line})", @method.assertion(0))
   end
 
   def test_text_from_expression_object_not_equal
     line = "Object.new"
     @method << line
-    assert_equal("assert_not_equal((#{line}), #{line})", @method.text_from_expression(line, 0))
+    assert_equal("assert_not_equal((#{line}), #{line})", @method.assertion(0))
   end
 
   def test_text_from_expression_array
     line = "([1,2,3])[0..0]"
     @method << line
-    assert_equal("assert_equal([1], #{line})", @method.text_from_expression(line, 0))
+    assert_equal("assert_equal([1], #{line})", @method.assertion(0))
   end
 
   def test_text_from_expression_illegal_input
-    line = "BADCOMMAND"
+    line = "badtext"
     @method << line
-    assert_nil @method.text_from_expression(line, 0)
+    assert_nil @method.assertion(0)
   end
 
   def test_text
     @method << "1 + 1"
-    assert_equal "def test_1\n    assert_equal(2, 1 + 1)\n  end", @method.text(1)
+    assert_equal "def test_1\n    assert_equal(2, 1 + 1)\n  end", @method.text
   end
 
 
 
-  def test_text_bad_input
-    @method << "BADCOMMAND"
-    assert_nil @method.text(1)
+  def test_text_bad_input_constant
+    @method << "BADCONSTANT"
+    assert_nil @method.text
   end
 
 

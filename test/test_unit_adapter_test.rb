@@ -54,15 +54,13 @@ class TestUnitAdapterTest < Test::Unit::TestCase
   def test_test_methods_naming
     @adapter.add_command("1 + 1")
     @adapter.close_assertion_set 'test_one_plus_one'
-    @adapter.test_methods
     assert_equal "def test_one_plus_one\n    assert_equal(2, 1 + 1)\n  end", @adapter.test_methods.first
   end
 
-  def test_test_methods_naming_prepends_test
-    @adapter.add_command("1 + 1")
-    @adapter.close_assertion_set 'one_plus_one'
-    @adapter.test_methods
-    assert_equal "def test_one_plus_one\n    assert_equal(2, 1 + 1)\n  end", @adapter.test_methods.first
+  def test_test_methods_bad_input
+    @adapter.add_command("BADCOMMAND")
+    @adapter.close_assertion_set
+    assert_nil @adapter.test_methods.first
   end
   
   def test_create_file
