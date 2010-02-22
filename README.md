@@ -1,8 +1,8 @@
 Butterfly Net
 =============
 
-[Home page and source]: http://butterflynet.org
-[Rubygems page]: http://rubygems.org/gems/butterfly_net
+[Home page and source download](http://butterflynet.org)
+[RubyGems page](http://rubygems.org/gems/butterfly_net)
 
 Author: Chris Smith (quartzmo -at- gmail.com)
 
@@ -14,8 +14,10 @@ IRB and Rails console history captured as Test::Unit tests. (RSpec and others ho
 
 ## INSTALL
 
-Butterfly Net is available as a gem from rubygems.org (http://rubygems.org/gems/butterfly_net), or as source from
-butterflynet.org.
+Butterfly Net is available as a gem from [rubygems.org](http://rubygems.org/gems/butterfly_net), or as source from
+[butterflynet.org](http://butterflynet.org).
+
+To install the gem:
 
     sudo gem install butterfly_net
 
@@ -86,11 +88,13 @@ The following commands can be used in any IRB-based console.
 
 ### Ruby on Rails console
 
-For repeatable tests, be sure to load the Rails test environment with "./script/console test".
-In a Rails project, you can run all tests with the standard rake command 'rake test',
-or an individual test by adding the test directory to the path with the option -I when you invoke Ruby.
+For repeatable tests, be sure to load the Rails test environment with "./script/console test". Invoke the `bn` command 
+with the relative path to the appropriate test sub-directory, and file name. (Hint: In a Rails project, you can run an 
+individual test by adding the test directory to the path with the option -I when you invoke Ruby.)
 
-    chris$ ./script/console test
+For example:
+
+    $ ./script/console test
     Loading test environment (Rails 2.3.4)
     >> bn "test/unit/person_console_test"
     . . .
@@ -98,7 +102,7 @@ or an individual test by adding the test directory to the path with the option -
     => 2
     >> exit
     . . .
-    chris$ ruby -Itest test/unit/person_console_test.rb
+    $ ruby -Itest test/unit/person_console_test.rb
     . . .
     1 tests, 1 assertions, 0 failures, 0 errors
 
@@ -111,7 +115,7 @@ This section covers issues which may not be resolved quickly. Feel free to lend 
 
 Butterfly Net relies on an expectation value responding with valid Ruby code to the inspect method, which is the case for core
 classes such as Hash and Array. However, it's not the case with most classes, many of which respond with the familiar
-#<...> notation, which can't be interpreted.
+`#<...>` notation, which isn't interpreted.
 
 For example:
 
