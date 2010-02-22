@@ -15,14 +15,14 @@ IRB and Rails console history captured as fully executable Test::Unit tests. (RS
 
 ## Description
 
-Butterfly Net is intended to help you capture, as tests, surprising or unexpected behavior that you come across while
+Butterfly Net is intended to help you capture, as executable tests, surprising or unexpected behavior that you come across while
 interacting with your project code in IRB.
 
 ** Warning **
 
-Butterfly Net does not support [test-first](http://www.extremeprogramming.org/rules/testfirst.html) development, and is
-not intended as a primary tool for [Test-Driven Development(TDD)](http://en.wikipedia.org/wiki/Test-driven_development).
-Read more about how it is meant to be used in Story, below.
+Butterfly Net is not a tool for [test-first](http://www.extremeprogramming.org/rules/testfirst.html) development, and is
+not intended as a primary tool for [Test-Driven Development](http://en.wikipedia.org/wiki/Test-driven_development)(TDD).
+Please use it in addition to these valuable methods.
 
 ## Install
 
@@ -123,24 +123,31 @@ For example:
 
 This section covers issues which may not be resolved quickly. Feel free to lend a hand!
 
-### The return value of the inspect method is not valid code
+### The return value of Object#inspect is often not valid Ruby
 
-Currently, the expectation that Butterfly Net places into an assertion is the output of an object's inspect method. Core
-classes such as Hash and Array return executable code, which works great. Unfortunately, most classes respond with the familiar
+Currently, the expectation that Butterfly Net places into an assertion is the output of Object#inspect. Simple types and value-oriented
+types such as Hash and Array usually do return valid code, which works great. Unfortunately, most other types respond with the familiar
 `#<...>` notation, which can't be interpreted.
 
 For example:
 
     assert_equal(#<BigDecimal:11511d8,'Infinity',4(24)>, BigDecimal.new("1.0") / BigDecimal.new("0.0"))  # doesn't work
 
-The workaround is to assign expected values to a variable. Of course, you have to know what to expect in order to do this, 
-which may take a few tries. Sorry. I'll be working on a solution to this one.
+The best workaround is to use IRB in a way that gets you to simple types, the same way you write unit tests that
+compare values by calling `to_s`, `to_i`, `to_f`, etc on more complex objects.
+Another solution, more appropriate for cases like the BigDecimal infinity example above, is to assign expected values to a variable.
+
+    infinity = BigDecimal('Infinity')
+    assert(BigDecimal.new("1.0") / BigDecimal.new("0.0") == infinity)    # works great, once you know what to expect
+
+Of course, you have to know what to expect in order to do this, which may take a few tries. Sorry.
+I'll be searching for a better solution to this one.
 
 
-### Assigning a variable, even in a string, results in no assertion for that line 
+### Assigning a variable, even within a string, results in no assertion for that line 
 
-To keep tests readable, Butterfly Net writes simple assignments such as "a = 1" without enclosing assertions.
-However, the regex it uses to make this exception can cause Butterfly Net to miss some tests.
+To keep tests readable, Butterfly Net writes simple assignment expressions such as "a = 1" without enclosing assertions.
+However, the regular expression it uses to accomplish this can cause Butterfly Net to miss some tests.
 
 For example:
 
@@ -156,8 +163,9 @@ results in
       "a=1".split('=')       # should have been assert_equal(["a", "1"],"a=1".split('='))
     end
 
-In order to avoid this issue, just put assignments (and anything that looks like an assignment) on separate lines 
-from statements you want to be tested with assertions.
+Maybe someone can suggest how Butterfly Net can become just enough of an actual Ruby interpreter to get past this issue?
+In the meantime, just put assignments (and anything that looks like an assignment) on separate lines 
+from the expressions you want to be tested.
 
 
 ## Story
