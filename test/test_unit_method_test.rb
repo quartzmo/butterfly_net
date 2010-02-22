@@ -11,92 +11,104 @@ class TestUnitMethodTest < Test::Unit::TestCase
     @method.name = "1"
   end
 
-  def test_simple_assignment_only_true
-     assert TestUnitMethod.simple_assignment_only? "a=1"
+  def test_assignment_or_require_true
+     assert TestUnitMethod.assignment_or_require? "a=1"
   end
 
-#  def test_simple_assignment_only_true_orequals          todo: solve orequals in regex
-#     assert TestUnitMethod.simple_assignment_only? "a ||= 1"
+#  def test_assignment_or_require_true_orequals          todo: solve orequals in regex
+#     assert TestUnitMethod.assignment_or_require? "a ||= 1"
 #  end
 
-  def test_simple_assignment_only_true_whitespace
-     assert TestUnitMethod.simple_assignment_only? "a = 1"
+  def test_assignment_or_require_true_whitespace
+     assert TestUnitMethod.assignment_or_require? "a = 1"
   end
 
-  def test_simple_assignment_only_true_contains_equals
-     assert TestUnitMethod.simple_assignment_only? "a = (1 == 1)"
+  def test_assignment_or_require_true_contains_equals
+     assert TestUnitMethod.assignment_or_require? "a = (1 == 1)"
   end
 
-  def test_simple_assignment_only_false
-     assert !TestUnitMethod.simple_assignment_only?("a + 1")
+  def test_assignment_or_require_true_require_bigdecimal
+     assert TestUnitMethod.assignment_or_require? "require 'bigdecimal'"
   end
 
-  def test_simple_assignment_only_false_with_equals
-     assert !TestUnitMethod.simple_assignment_only?("a == 1")
+  def test_assignment_or_require_true_require
+     assert TestUnitMethod.assignment_or_require? "require 'rubygems'"
   end
 
-  def test_simple_assignment_only_false_threequals
-     assert !TestUnitMethod.simple_assignment_only?("a===1")
+  def test_assignment_or_require_true_require_no_spaces
+     assert TestUnitMethod.assignment_or_require? "require\"rubygems\""
   end
 
-  def test_simple_assignment_only_false_regex
-    assert !TestUnitMethod.simple_assignment_only?("'a' =~ /a/")
+  def test_assignment_or_require_false
+     assert !TestUnitMethod.assignment_or_require?("a + 1")
   end
 
-  def test_simple_assignment_only_false_regex
-    assert !TestUnitMethod.simple_assignment_only?("'a' =~ /a/")
+  def test_assignment_or_require_false_with_equals
+     assert !TestUnitMethod.assignment_or_require?("a == 1")
   end
 
-  def test_simple_assignment_only_false_lessthanequals
-    assert !TestUnitMethod.simple_assignment_only?("1 <= 1")
+  def test_assignment_or_require_false_threequals
+     assert !TestUnitMethod.assignment_or_require?("a===1")
   end
 
-  def test_simple_assignment_only_false_greaterthanequals
-    assert !TestUnitMethod.simple_assignment_only?("1 >= 1")
+  def test_assignment_or_require_false_regex
+    assert !TestUnitMethod.assignment_or_require?("'a' =~ /a/")
   end
 
-  def test_simple_assignment_only_false_flyingsaucer
-    assert !TestUnitMethod.simple_assignment_only?("1 <=> 1")
+  def test_assignment_or_require_false_regex
+    assert !TestUnitMethod.assignment_or_require?("'a' =~ /a/")
   end
 
-  def test_simple_assignment_only_false_notequal
-    assert !TestUnitMethod.simple_assignment_only?("1 != 0")
+  def test_assignment_or_require_false_lessthanequals
+    assert !TestUnitMethod.assignment_or_require?("1 <= 1")
   end
 
-  def test_simple_assignment_only_false_modequal
-    assert !TestUnitMethod.simple_assignment_only?("a %= 1")
+  def test_assignment_or_require_false_greaterthanequals
+    assert !TestUnitMethod.assignment_or_require?("1 >= 1")
   end
 
-  def test_simple_assignment_only_false_orequal
-    assert !TestUnitMethod.simple_assignment_only?("a |= 1")
+  def test_assignment_or_require_false_flyingsaucer
+    assert !TestUnitMethod.assignment_or_require?("1 <=> 1")
   end
 
-  def test_simple_assignment_only_false_plusequal
-    assert !TestUnitMethod.simple_assignment_only?("a += 1")
+  def test_assignment_or_require_false_notequal
+    assert !TestUnitMethod.assignment_or_require?("1 != 0")
   end
 
-  def test_simple_assignment_only_false_minusequal
-    assert !TestUnitMethod.simple_assignment_only?("a -= 1")
+  def test_assignment_or_require_false_modequal
+    assert !TestUnitMethod.assignment_or_require?("a %= 1")
   end
 
-  def test_simple_assignment_only_false_divideequal
-    assert !TestUnitMethod.simple_assignment_only?("a /= 1")
+  def test_assignment_or_require_false_orequal
+    assert !TestUnitMethod.assignment_or_require?("a |= 1")
   end
 
-  def test_simple_assignment_only_false_andequal
-    assert !TestUnitMethod.simple_assignment_only?("a &= 1")
+  def test_assignment_or_require_false_plusequal
+    assert !TestUnitMethod.assignment_or_require?("a += 1")
   end
 
-  def test_simple_assignment_only_false_shiftrightequal
-    assert !TestUnitMethod.simple_assignment_only?("a >>= 1")
+  def test_assignment_or_require_false_minusequal
+    assert !TestUnitMethod.assignment_or_require?("a -= 1")
   end
 
-  def test_simple_assignment_only_false_shiftleftequal
-    assert !TestUnitMethod.simple_assignment_only?("a <<= 1")
+  def test_assignment_or_require_false_divideequal
+    assert !TestUnitMethod.assignment_or_require?("a /= 1")
   end
 
-  def test_simple_assignment_only_false_timesequal
-    assert !TestUnitMethod.simple_assignment_only?("a *= 1")
+  def test_assignment_or_require_false_andequal
+    assert !TestUnitMethod.assignment_or_require?("a &= 1")
+  end
+
+  def test_assignment_or_require_false_shiftrightequal
+    assert !TestUnitMethod.assignment_or_require?("a >>= 1")
+  end
+
+  def test_assignment_or_require_false_shiftleftequal
+    assert !TestUnitMethod.assignment_or_require?("a <<= 1")
+  end
+
+  def test_assignment_or_require_false_timesequal
+    assert !TestUnitMethod.assignment_or_require?("a *= 1")
   end
 
   def test_name_uppercase
@@ -150,7 +162,12 @@ class TestUnitMethodTest < Test::Unit::TestCase
     assert_equal "def test_1\n    a = 1\n    assert_equal(2, a += 1)\n  end", @method.text
   end
 
-
+  def test_text_require
+    @method << "require 'rubygems'"
+    @method << "require'active_support'"
+    @method << "'CamelCase'.underscore"
+    assert_equal "def test_1\n    require 'rubygems'\n    require'active_support'\n    assert_equal(\"camel_case\", 'CamelCase'.underscore)\n  end", @method.text
+  end
 
   def test_expected_boolean
     line = "1 == 1"

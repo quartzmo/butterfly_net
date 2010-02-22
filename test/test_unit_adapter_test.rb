@@ -22,7 +22,6 @@ class TestUnitAdapterTest < Test::Unit::TestCase
   def test_test_methods_single
     @adapter.add_command("1 + 1")
     expected = "def test_1\n    assert_equal(2, 1 + 1)\n  end"
-    @adapter.test_methods
     assert_equal expected, @adapter.test_methods.first
   end
 
@@ -30,7 +29,6 @@ class TestUnitAdapterTest < Test::Unit::TestCase
     @adapter.add_command("1 + 1")
     @adapter.add_command("1 + 2")
     expected = "def test_1\n    assert_equal(2, 1 + 1)\n    assert_equal(3, 1 + 2)\n  end"
-    @adapter.test_methods
     assert_equal expected, @adapter.test_methods.last
   end
 
@@ -38,7 +36,13 @@ class TestUnitAdapterTest < Test::Unit::TestCase
     @adapter.add_command("a = 1")
     @adapter.add_command("a + 2")
     expected = "def test_1\n    a = 1\n    assert_equal(3, a + 2)\n  end"
-    @adapter.test_methods
+    assert_equal expected, @adapter.test_methods.last
+  end
+
+  def test_test_methods_require
+    @adapter.add_command("require 'bigdecimal'")
+    @adapter.add_command("BigDecimal(\"1.0\") - 0.5")
+    expected = "def test_1\n    require 'bigdecimal'\n    assert_equal(0.5, BigDecimal(\"1.0\") - 0.5)\n  end"
     assert_equal expected, @adapter.test_methods.last
   end
 
@@ -46,7 +50,6 @@ class TestUnitAdapterTest < Test::Unit::TestCase
     @adapter.add_command("1 + 1")
     @adapter.close_assertion_set
     @adapter.add_command("1 + 2")
-    @adapter.test_methods
     assert_equal "def test_1\n    assert_equal(2, 1 + 1)\n  end", @adapter.test_methods.first
     assert_equal "def test_2\n    assert_equal(3, 1 + 2)\n  end", @adapter.test_methods.last
   end

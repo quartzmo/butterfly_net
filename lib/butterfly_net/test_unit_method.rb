@@ -16,22 +16,8 @@ module ButterflyNet
       @name = name =~ /^test_/ ? name : "test_#{name}"
     end
 
-    def self.simple_assignment_only?(line)  # todo: extract to line class
-      line =~ /[^=<>!*%\/+-\\|&]=[^=~]/
-    end
-
-    def self.assertion(expected, line)     # todo: extract to assertion class
-      if expected && simple_assignment_only?(line)
-        line
-      elsif expected && expected == line # type not supported, assume object inequality
-        "assert_not_equal((#{expected}), #{line})"
-      elsif expected == "true" # use simple assert() for true boolean expressions
-        "assert(#{line})"
-      elsif expected
-        "assert_equal(#{expected}, #{line})"
-      else
-        nil
-      end
+    def self.assignment_or_require?(line)  # todo: extract to line class
+      line =~ /require\s*['|"]\w+['|"]|[^=<>!*%\/+-\\|&]=[^=~]/
     end
 
     def text
@@ -62,9 +48,8 @@ module ButterflyNet
           retry
         end
       end
-      if retval && TestUnitMethod.simple_assignment_only?(current_line)
+      if TestUnitMethod.assignment_or_require?(current_line)
         current_line
-
       elsif instances_equal_by_value?(retval) # expression result supports value equality
 
         if retval == true # use simple assert() for true boolean expressions
