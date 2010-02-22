@@ -1,10 +1,10 @@
 require 'rubygems'
 SPEC = Gem::Specification.new do |s|
   s.name = "butterfly_net"
-  s.version = "0.0.2"
+  s.version = "0.0.3"
   s.author = "Chris Smith"
   s.email = "quartzmo@gmail.com"
-  s.homepage = "http://github.com/quartzmo/butterfly_net"
+  s.homepage = "http://www.butterflynet.org"
   description_short = "IRB and Rails console history captured as Test::Unit tests. (RSpec and others hopefully soon to come.)"
   s.summary = description_short
   s.description = description_short

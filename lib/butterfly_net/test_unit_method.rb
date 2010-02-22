@@ -57,8 +57,7 @@ module ButterflyNet
         commands = @commands[start_i..current_i].join("\n")
 
         if start_i < 0
-          puts "Failed to evaluate command sequence: '#{commands}'"
-          return nil
+          return nil    # give up, can't go further back
         else
           retry
         end
@@ -88,6 +87,8 @@ module ButterflyNet
       instance == instance.dup rescue true  # can't dup Fixnum, et al...
     end
 
+    private
+
 
     def purge_bad_commands
       begin
@@ -105,8 +106,6 @@ module ButterflyNet
       end
       nil
     end
-
-    private
 
     # Adapted from ActiveSupport Inflector
     def underscore(name)
