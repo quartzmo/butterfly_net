@@ -11,7 +11,7 @@ Author: Chris Smith (quartzmo -at- gmail.com)
 
 ## Summary
 
-IRB and Rails console history captured as fully executable Test::Unit tests. (RSpec and others hopefully soon to come.)
+IRB and Rails console history captured as Test::Unit tests. (RSpec and others hopefully soon to come.)
 
 ## Description
 
@@ -21,7 +21,7 @@ interacting with your project code in IRB.
 ** Warning **
 
 Butterfly Net is not a tool for [test-first](http://www.extremeprogramming.org/rules/testfirst.html) development, and is
-not intended as a primary tool for [Test-Driven Development](http://en.wikipedia.org/wiki/Test-driven_development)(TDD).
+not intended as a primary tool for [Test-Driven Development](http://en.wikipedia.org/wiki/Test-driven_development) (TDD).
 Please use it in addition to these valuable methods.
 
 ## Install
@@ -135,10 +135,11 @@ For example:
 
 The best workaround is to use IRB in a way that gets you to simple types, the same way you write unit tests that
 compare values by calling `to_s`, `to_i`, `to_f`, etc on more complex objects.
-Another solution, more appropriate for cases like the BigDecimal infinity example above, is to assign expected values to a variable.
+Another solution, more appropriate for cases like the BigDecimal infinity example above, is to assign the expected
+result to a variable.
 
     infinity = BigDecimal('Infinity')
-    assert(BigDecimal.new("1.0") / BigDecimal.new("0.0") == infinity)    # works great, once you know what to expect
+    assert(BigDecimal.new("1.0") / BigDecimal.new("0.0") == infinity)    # works great, IF you know what to expect
 
 Of course, you have to know what to expect in order to do this, which may take a few tries. Sorry.
 I'll be searching for a better solution to this one.
@@ -170,22 +171,24 @@ from the expressions you want to be tested.
 
 ## Story
 
-Coming to Ruby from Java, I felt The Console (IRB) was like a magical English butler, always there discreetly
-at my side to instantly and precisely answer any question. How incredible!
+Coming to Ruby from Java, I felt "The Console" was like a magical English butler, always there discreetly
+at my side to instantly and precisely answer all my questions. How incredible!
 
-In my pre-Ruby days, JUnit was my preferred tool for answering code questions, both about my own project code and about
-third-party code. As anyone who has worked on a legacy (ie, testless) codebase, or experienced
+In Java, JUnit had been my preferred tool for exploring code, both my own project code and
+third-party libraries and frameworks. As anyone who has worked on a legacy (testless) codebase, or experienced
 java.util.Calendar knows, the tighter the feedback loop, the sooner you get your answers. Experimenting with code behavior through an
 application UI is only for the foolish (or those who bill by the hour on government projects.)
-JUnit tests were the fastest path that I had to seeing what code did in real life. With IntelliJ IDEA generating the
-boilerplate at a keystroke, it is a quick and very acceptable tool. When I was done learning and experimenting, I deleted most of the tests,
-in accordance with the idea that less is better, and that you don't need to run automated regression tests for stable, third-party code.
+JUnit tests were usually the fastest way I could experience what code did in real life, and with IntelliJ IDEA generating the
+boilerplate at a keystroke, such exploratory testing was quick and very acceptable. When I was done learning and
+experimenting, I deleted most of the tests, in accordance with the idea that less is better, and that you don't need to
+run your own automated regression tests for stable, third-party code.
 
 Switching to Ruby, I found IRB to be a much better tool, but as with all great conveniences, it had a downside.
-Although I generally practice a test-first style, I naturally like to exercise existing code after it is written,
-kicking the tires, if you will. With JUnit, any interesting behavior I discovered during this process was captured in a
-test, and was duly added to the suite. With The Console? Gone, flown off into the deep blue. The idea for Butterfly Net
-occurred to me pretty quickly. That's the story. I'm not sure how others will use it, but I would love to hear. 
+Although I generally program in a test-first style, I naturally like to exercise existing code after it is written,
+kicking the tires and banging on the doors. With JUnit, any interesting behavior I discovered during this process was captured in a
+test, and was duly added to the suite. With IRB? Gone, flown off into the deep blue. The idea for Butterfly Net
+occurred to me pretty quickly. That's the story, so far. I'm not sure how others will use Butterfly Net, but I don't want to limit the possibilities. 
+Hopefully it will only become more generalized and flexible with time.
 
 
 ## License
