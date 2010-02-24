@@ -4,6 +4,7 @@ module ButterflyNet
     attr_accessor :name
 
     def initialize
+      @definitions = []
       @commands = []
     end
 
@@ -13,21 +14,45 @@ module ButterflyNet
 
     def name=(name)
       name = underscore(name)
-      @name = name =~ /^test_/ ? name : "test_#{name}"
+      @name = name =~ /^\s*test_/ ? name : "test_#{name}"
     end
 
     def self.assignment_or_require?(line)  # todo: extract to line class
       line =~ /require\s*['|"]\w+['|"]|[^=<>!*%\/+-\\|&]=[^=~]/
     end
 
+    def self.start_def?(line)  # todo: extract to line class
+      line =~ /^\s*def\s+|^\s*class\s+|^\s*module\s+/
+    end
+
+    def self.end_def?(line)  # todo: extract to line class
+      line =~ /end\s*$/
+    end
+
     def text
       purge_bad_commands
+      before_test_method = ""
       lines_string = ""
-      @commands.each_index do |i|
-        text = assertion(i)
-        lines_string += "    #{text}\n" if text
+      definition_nesting_level = 0
+      @commands.each_with_index do |current_line, i|
+        if TestUnitMethod.start_def?(current_line) and TestUnitMethod.end_def?(current_line)
+          before_test_method += "  #{current_line}\n\n"
+        elsif TestUnitMethod.start_def?(current_line)
+          definition_nesting_level += 1
+          before_test_method += "  #{current_line}\n\n"
+        elsif TestUnitMethod.end_def?(current_line)
+          definition_nesting_level -= 1
+          before_test_method += "  #{current_line}\n\n"
+        elsif definition_nesting_level == 0
+          text = assertion(i)
+          lines_string += "    #{text}\n" if text
+        else
+          indent = "  " * (definition_nesting_level - 1)
+          before_test_method += "#{indent}#{current_line}\n\n"          
+        end
       end
-      lines_string.empty? ? nil : "def #{@name}\n#{lines_string}  end"
+      before_test_method += "  "
+      lines_string.empty? ? nil : "#{before_test_method}def #{@name}\n#{lines_string}  end"
     end
 
     def assertion(current_i)
@@ -74,22 +99,30 @@ module ButterflyNet
 
     private
 
-
     def purge_bad_commands
       begin
         commands = ""
         index = 0
+        definition_nesting_level = 0
         @commands.each_with_index do |current_line, i|
           index = i
           commands += current_line + "\n"
-          eval commands
+          if TestUnitMethod.start_def?(current_line) and TestUnitMethod.end_def?(current_line)
+            #let it ride
+          elsif TestUnitMethod.start_def?(current_line)
+            definition_nesting_level += 1
+          elsif TestUnitMethod.end_def?(current_line)
+            definition_nesting_level -= 1
+          elsif definition_nesting_level == 0
+            eval commands  #todo write test breaking assumption that definitions are valid code, and impl separate eval's for definitions
+          end
         end
-
+        nil
       rescue Exception
         # delete offender and start again from the beginning
-        @commands.delete_at index
+        @commands.delete_at index      # todo: test if string equality is safe for delete()
+        retry
       end
-      nil
     end
 
     # Adapted from ActiveSupport Inflector
