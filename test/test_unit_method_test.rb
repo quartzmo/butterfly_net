@@ -181,21 +181,21 @@ class TestUnitMethodTest < Test::Unit::TestCase
     @method << "a = 1"
     @method << "2b" # syntax error, unexpected tIDENTIFIER, expecting $end
     @method << "a += 1"
-    assert_equal "  def test_1\n    a = 1\n    assert_equal(2, a += 1)\n  end", @method.text
+    assert_equal "  def test_1\n    a = 1\n    assert_equal(2, a += 1)\n  end\n\n", @method.text
   end
 
   def test_purge_unexpected_identifiers
     @method << "a += 1"  # undefined method `+' for nil:NilClass
     @method << "a = 1"
     @method << "a += 1"
-    assert_equal "  def test_1\n    a = 1\n    assert_equal(2, a += 1)\n  end", @method.text
+    assert_equal "  def test_1\n    a = 1\n    assert_equal(2, a += 1)\n  end\n\n", @method.text
   end
 
   def test_text_require
     @method << "require 'rubygems'"
     @method << "require'active_support'"
     @method << "'CamelCase'.underscore"
-    assert_equal "  def test_1\n    require 'rubygems'\n    require'active_support'\n    assert_equal(\"camel_case\", 'CamelCase'.underscore)\n  end", @method.text
+    assert_equal "  def test_1\n    require 'rubygems'\n    require'active_support'\n    assert_equal(\"camel_case\", 'CamelCase'.underscore)\n  end\n\n", @method.text
   end
 
   def test_expected_boolean
@@ -269,7 +269,7 @@ class TestUnitMethodTest < Test::Unit::TestCase
     @method << "def timestwo(i); i * 2; end"
     line = "timestwo(2)"
     @method << line
-    assert_equal("  def timestwo(i); i * 2; end\n\n  def test_1\n    assert_equal(4, #{line})\n  end", @method.text)
+    assert_equal("  def timestwo(i); i * 2; end\n\n  def test_1\n    assert_equal(4, #{line})\n  end\n\n", @method.text)
   end
 
   def test_assertion_illegal_input
@@ -280,13 +280,13 @@ class TestUnitMethodTest < Test::Unit::TestCase
 
   def test_text
     @method << "1 + 1"
-    assert_equal "  def test_1\n    assert_equal(2, 1 + 1)\n  end", @method.text
+    assert_equal "  def test_1\n    assert_equal(2, 1 + 1)\n  end\n\n", @method.text
   end
 
   def test_text_variable_assignment_only
     line = "a = 1"
     @method << line
-    assert_equal "  def test_1\n    #{line}\n  end", @method.text
+    assert_equal "  def test_1\n    #{line}\n  end\n\n", @method.text
   end
 
   def test_extract_definitions_class_multiline_empty
@@ -296,7 +296,7 @@ class TestUnitMethodTest < Test::Unit::TestCase
     @method << line
     @method << line2
     @method << line3
-    assert_equal "  #{line}\n  #{line2}\n\n  def test_1\n    assert_not_equal((#{line3}), #{line3})\n  end", @method.text
+    assert_equal "  #{line}\n  #{line2}\n\n  def test_1\n    assert_not_equal((#{line3}), #{line3})\n  end\n\n", @method.text
   end
 
   def test_extract_definitions_class_with_method
@@ -306,29 +306,13 @@ class TestUnitMethodTest < Test::Unit::TestCase
     @method << "end"
     @method << "end"
     @method << "MyClass.new.name"
-    assert_equal "  class MyClass\n    def name\n      \"classy\"\n    end\n  end\n\n  def test_1\n    assert_equal(\"classy\", MyClass.new.name)\n  end", @method.text
+    assert_equal "  class MyClass\n    def name\n      \"classy\"\n    end\n  end\n\n  def test_1\n    assert_equal(\"classy\", MyClass.new.name)\n  end\n\n", @method.text
   end
-
-
 
   def test_text_bad_input_constant
     @method << "BADCONSTANT"
     assert_nil @method.text
   end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   # non-project tests (scratchpad)
 
   def test_eval_scope

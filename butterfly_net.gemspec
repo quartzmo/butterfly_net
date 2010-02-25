@@ -1,7 +1,7 @@
 require 'rubygems'
 SPEC = Gem::Specification.new do |s|
   s.name = "butterfly_net"
-  s.version = "0.0.3"
+  s.version = "0.0.4"
   s.author = "Chris Smith"
   s.email = "quartzmo@gmail.com"
   s.homepage = "http://www.butterflynet.org"

@@ -4,12 +4,16 @@ module ButterflyNet
     attr_accessor :name
 
     def initialize
-      @definitions = []
       @commands = []
+      @definitions = []
     end
 
     def <<(line)
       @commands << line
+    end
+
+    def empty?
+      @commands.empty?
     end
 
     def name=(name)
@@ -51,7 +55,7 @@ module ButterflyNet
         end
       end
       before_test_method += "  "
-      lines_string.empty? ? nil : "#{before_test_method}def #{@name}\n#{lines_string}  end"
+      lines_string.empty? ? nil : "#{before_test_method}def #{@name}\n#{lines_string}  end\n\n"
     end
 
     def assertion(current_i)
@@ -87,16 +91,24 @@ module ButterflyNet
       else
 
         # any other sort of object is handled as a not equal assertion
-        "assert_not_equal((#{current_line}), #{current_line})"
+        "assert_not_equal((#{current_line}), #{current_line})"    # todo assert_not_nil in some cases?
       end
 
     end
 
     def instances_equal_by_value?(instance)
-      instance == instance.dup rescue true  # can't dup Fixnum, et al...
+      instance == instance.dup rescue true  # assume anything like Fixnum that can't be dup'd is a value type...
     end
 
     private
+
+#    def extract_definitions         # work in progress, todo: handle definitions separately, place at top of file
+#      @commands.each_with_index do |current_line, i|
+#        if TestUnitMethod.start_def?(current_line) or TestUnitMethod.end_def?(current_line)
+#          @definitions << current_line
+#        end
+#      end
+#    end
 
     def purge_bad_commands
       begin
@@ -113,7 +125,7 @@ module ButterflyNet
           elsif TestUnitMethod.end_def?(current_line)
             nesting_level -= 1
           elsif nesting_level == 0
-            eval commands  #todo write test breaking assumption that definitions are valid code, and impl separate eval's for definitions
+            eval commands  #todo write tests breaking assumption that definitions are valid code, and impl separate eval's for definitions
           end
         end
         nil
