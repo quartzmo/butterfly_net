@@ -128,6 +128,10 @@ class TestUnitMethodTest < Test::Unit::TestCase
   end
 
 
+  def test_start_def_true_inline
+    assert TestUnitMethod.start_def?(" def timestwo(i); i * 2; end ")
+  end
+
   def test_end_def_true_inline
     assert TestUnitMethod.end_def?(" def timestwo(i); i * 2; end ")
   end
@@ -292,23 +296,17 @@ class TestUnitMethodTest < Test::Unit::TestCase
     @method << line
     @method << line2
     @method << line3
-    assert_equal "  #{line}\n\n  #{line2}\n\n  def test_1\n    assert_not_equal((#{line3}), #{line3})\n  end", @method.text
+    assert_equal "  #{line}\n  #{line2}\n\n  def test_1\n    assert_not_equal((#{line3}), #{line3})\n  end", @method.text
   end
 
   def test_extract_definitions_class_with_method
-    line = "class MyClass"
-    line2 = "def name"
-    line3 = "\"classy\""
-    line4 = "end"
-    line5 = "end"
-    line6 = "MyClass.new.name"
-    @method << line
-    @method << line2
-    @method << line3
-    @method << line4
-    @method << line5
-    @method << line6
-    assert_equal "  #{line}\n\n  #{line2}\n\n  #{line3}\n\n  #{line4}\n\n  #{line5}\n\n  def test_1\n    assert_equal(#{line3}, #{line6})\n  end", @method.text
+    @method << "class MyClass"
+    @method << "def name"
+    @method << "\"classy\""
+    @method << "end"
+    @method << "end"
+    @method << "MyClass.new.name"
+    assert_equal "  class MyClass\n    def name\n      \"classy\"\n    end\n  end\n\n  def test_1\n    assert_equal(\"classy\", MyClass.new.name)\n  end", @method.text
   end
 
 

@@ -48,26 +48,18 @@ module ButterflyNet
       check_for_readline
       lines = Readline::HISTORY.to_a
       @end_index ||= Readline::HISTORY.size - 3 # in case of no call to 'bn_close'
-#      if @adapter.empty?
-#        puts "butterfly_net: #{@file_name} closed, no file written to disk."
-#
-#        false
-#
-#      else
       if @end_index < 0 || lines[@start_index..@end_index].empty?
-        puts "butterfly_net: #{@file_name} closed"
       else
         lines[@start_index..@end_index].each do |line|
           @adapter.add_command(line)
         end
-        puts "butterfly_net: #{@file_name} closed, with #{@end_index - @start_index + 1} lines, from '#{lines[@start_index]}' to '#{lines[@end_index]}'"
 
       end
 
-      @adapter.create_file(@file_name)
+      result = @adapter.create_file(@file_name)
+      puts result ? "butterfly_net: #{@file_name} created." : "butterfly_net: #{@file_name} was not created. No tests were generated from this session."
+      result
 
-      true
-      #    end
     rescue Exception => e
       puts "butterfly_net:  Error generating tests: #{e}"
       puts e.backtrace

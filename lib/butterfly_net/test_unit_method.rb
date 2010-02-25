@@ -33,22 +33,21 @@ module ButterflyNet
       purge_bad_commands
       before_test_method = ""
       lines_string = ""
-      definition_nesting_level = 0
+      nesting_level = 0
       @commands.each_with_index do |current_line, i|
         if TestUnitMethod.start_def?(current_line) and TestUnitMethod.end_def?(current_line)
-          before_test_method += "  #{current_line}\n\n"
+          before_test_method += "  #{("  " * nesting_level)}#{current_line}\n\n"
         elsif TestUnitMethod.start_def?(current_line)
-          definition_nesting_level += 1
-          before_test_method += "  #{current_line}\n\n"
+          nesting_level += 1
+          before_test_method += "#{("  " * nesting_level)}#{current_line}\n"
         elsif TestUnitMethod.end_def?(current_line)
-          definition_nesting_level -= 1
-          before_test_method += "  #{current_line}\n\n"
-        elsif definition_nesting_level == 0
+          nesting_level -= 1
+          before_test_method += "  #{("  " * nesting_level)}#{current_line}\n#{ nesting_level == 0 ? "\n" : ""}"
+        elsif nesting_level == 0
           text = assertion(i)
           lines_string += "    #{text}\n" if text
         else
-          indent = "  " * (definition_nesting_level - 1)
-          before_test_method += "#{indent}#{current_line}\n\n"          
+          before_test_method += "  #{("  " * nesting_level)}#{current_line}\n"
         end
       end
       before_test_method += "  "
@@ -103,17 +102,17 @@ module ButterflyNet
       begin
         commands = ""
         index = 0
-        definition_nesting_level = 0
+        nesting_level = 0
         @commands.each_with_index do |current_line, i|
           index = i
           commands += current_line + "\n"
           if TestUnitMethod.start_def?(current_line) and TestUnitMethod.end_def?(current_line)
             #let it ride
           elsif TestUnitMethod.start_def?(current_line)
-            definition_nesting_level += 1
+            nesting_level += 1
           elsif TestUnitMethod.end_def?(current_line)
-            definition_nesting_level -= 1
-          elsif definition_nesting_level == 0
+            nesting_level -= 1
+          elsif nesting_level == 0
             eval commands  #todo write test breaking assumption that definitions are valid code, and impl separate eval's for definitions
           end
         end

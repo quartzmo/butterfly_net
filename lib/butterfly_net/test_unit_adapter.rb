@@ -30,25 +30,28 @@ module ButterflyNet
     end
 
     def create_file(filename)
-      return nil if empty?
+      bodytext = body
 
-      #todo detect existing file, and delete last 'end' line
-      file = File.open(filename, 'a+')  # starts at end of file if file exists
+      return false if empty? || bodytext.empty?
+      begin
+        #todo detect existing file, and delete last 'end' line
+        file = File.open(filename, 'a+')  # starts at end of file if file exists
 
-      if defined? ActiveSupport::TestCase # rails  # todo support earlier versions of rails
-        file.puts "require \"test_helper\"\n\n# script/console test capture courtesy of butterfly_net (butterflynet.org)\nclass MyTest < ActiveSupport::TestCase\n\n"
-      else
-        file.puts "require \"test/unit\"\n\n# IRB test capture courtesy of butterfly_net (butterflynet.org)\nclass MyTest < Test::Unit::TestCase\n\n"
+        if defined? ActiveSupport::TestCase # rails  # todo support earlier versions of rails
+          file.puts "require \"test_helper\"\n\n# script/console test capture courtesy of butterfly_net (butterflynet.org)\nclass MyTest < ActiveSupport::TestCase\n\n"
+        else
+          file.puts "require \"test/unit\"\n\n# IRB test capture courtesy of butterfly_net (butterflynet.org)\nclass MyTest < Test::Unit::TestCase\n\n"
+        end
+
+        file.puts bodytext
+        
+        true
+      ensure
+        if file # todo: closing is always good, but prevent writing partial data in case of exception
+          file.puts "end"
+          file.close
+        end
       end
-
-      file.puts body
-
-    ensure
-      if file # todo: closing is always good, but prevent writing partial data in case of exception
-        file.puts "end"
-        file.close
-      end
-
     end
 
     def test_methods
