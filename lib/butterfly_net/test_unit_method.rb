@@ -2,14 +2,27 @@ module ButterflyNet
   class TestUnitMethod
 
     attr_accessor :name
+    attr_reader :definitions, :lines
 
     def initialize
-      @commands = []
-      @definitions = []
+      @commands = []       # todo: merge these 2 arrays in to single array of 2element pairs
+      @lines = []
+      @definitions = Definitions.new
     end
 
     def <<(line)
-      @commands << line
+      unless @definitions << line
+        begin
+          code = @definitions.to_s + @commands.join("\n") + "\n" + line
+          retval = eval code
+          @commands << line    # todo replace def handling below with definitions (work in progress)
+          @lines << final_line_string(line, retval)
+        rescue Exception
+          @commands << "# #{line}   # butterfly_net: Could not evaluate."
+          @lines << "  # #{line}   # butterfly_net: Could not evaluate."
+        end
+      end
+      self
     end
 
     def empty?
@@ -25,57 +38,12 @@ module ButterflyNet
       line =~ /require\s*['|"]\w+['|"]|[^=<>!*%\/+-\\|&]=[^=~]/
     end
 
-    def self.start_def?(line)  # todo: extract to line class
-      line =~ /^\s*def\s+|^\s*class\s+|^\s*module\s+/
-    end
-
-    def self.end_def?(line)  # todo: extract to line class
-      line =~ /end\s*$/
-    end
-
     def text
-      purge_bad_commands
-      before_test_method = ""
-      lines_string = ""
-      nesting_level = 0
-      @commands.each_with_index do |current_line, i|
-        if TestUnitMethod.start_def?(current_line) and TestUnitMethod.end_def?(current_line)
-          before_test_method += "  #{("  " * nesting_level)}#{current_line}\n\n"
-        elsif TestUnitMethod.start_def?(current_line)
-          nesting_level += 1
-          before_test_method += "#{("  " * nesting_level)}#{current_line}\n"
-        elsif TestUnitMethod.end_def?(current_line)
-          nesting_level -= 1
-          before_test_method += "  #{("  " * nesting_level)}#{current_line}\n#{ nesting_level == 0 ? "\n" : ""}"
-        elsif nesting_level == 0
-          text = assertion(i)
-          lines_string += "    #{text}\n" if text
-        else
-          before_test_method += "  #{("  " * nesting_level)}#{current_line}\n"
-        end
-      end
-      before_test_method += "  "
-      lines_string.empty? ? nil : "#{before_test_method}def #{@name}\n#{lines_string}  end\n\n"
+      lines_string = @lines.inject("") {|result, e| result += "    #{e}\n" if e; result}
+      lines_string.empty? ? nil : "#{@definitions.to_s}  def #{@name}\n#{lines_string}  end\n\n"
     end
 
-    def assertion(current_i)
-
-      current_line = @commands[current_i]
-      commands = current_line
-      start_i = current_i
-
-      begin
-        retval = eval commands
-      rescue Exception
-        start_i -= 1
-        commands = @commands[start_i..current_i].join("\n")
-
-        if start_i < 0
-          return nil    # give up, can't go further back
-        else
-          retry
-        end
-      end
+    def final_line_string(current_line, retval)
       if TestUnitMethod.assignment_or_require?(current_line)
         current_line
       elsif instances_equal_by_value?(retval) # expression result supports value equality
@@ -87,13 +55,10 @@ module ButterflyNet
         else
           "assert_equal(#{retval.inspect}, #{current_line})"
         end
-
       else
-
         # any other sort of object is handled as a not equal assertion
-        "assert_not_equal((#{current_line}), #{current_line})"    # todo assert_not_nil in some cases?
+        "assert_not_nil(#{current_line})"    # todo assert_not_nil in some cases?
       end
-
     end
 
     def instances_equal_by_value?(instance)
@@ -101,40 +66,6 @@ module ButterflyNet
     end
 
     private
-
-#    def extract_definitions         # work in progress, todo: handle definitions separately, place at top of file
-#      @commands.each_with_index do |current_line, i|
-#        if TestUnitMethod.start_def?(current_line) or TestUnitMethod.end_def?(current_line)
-#          @definitions << current_line
-#        end
-#      end
-#    end
-
-    def purge_bad_commands
-      begin
-        commands = ""
-        index = 0
-        nesting_level = 0
-        @commands.each_with_index do |current_line, i|
-          index = i
-          commands += current_line + "\n"
-          if TestUnitMethod.start_def?(current_line) and TestUnitMethod.end_def?(current_line)
-            #let it ride
-          elsif TestUnitMethod.start_def?(current_line)
-            nesting_level += 1
-          elsif TestUnitMethod.end_def?(current_line)
-            nesting_level -= 1
-          elsif nesting_level == 0
-            eval commands  #todo write tests breaking assumption that definitions are valid code, and impl separate eval's for definitions
-          end
-        end
-        nil
-      rescue Exception
-        # delete offender and start again from the beginning
-        @commands.delete_at index      # todo: test if string equality is safe for delete()
-        retry
-      end
-    end
 
     # Adapted from ActiveSupport Inflector
     def underscore(name)
@@ -145,8 +76,6 @@ module ButterflyNet
               tr(" ", "_").
               downcase
     end
-
-
 
   end
 end

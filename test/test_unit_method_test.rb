@@ -1,6 +1,7 @@
 require "test/unit"
 $: << File.expand_path(File.dirname(__FILE__))
 $: << File.join(File.expand_path(File.dirname(__FILE__)), File.join("..", "lib"))
+require "butterfly_net/definitions"
 require "butterfly_net/test_unit_method"
 
 class TestUnitMethodTest < Test::Unit::TestCase
@@ -111,35 +112,6 @@ class TestUnitMethodTest < Test::Unit::TestCase
     assert !TestUnitMethod.assignment_or_require?("a *= 1")
   end
 
-  def test_method_def_true_whitespace
-    assert TestUnitMethod.start_def?(" def timestwo(i); i * 2; end ")
-  end
-
-  def test_class_def_true_whitespace
-    assert TestUnitMethod.start_def?(" class MyClass; end ")
-  end
-
-  def test_class_def_true_whitespace
-    assert TestUnitMethod.start_def?(" module MyModule; end ")
-  end
-
-  def test_method_def_false_variable
-    assert !TestUnitMethod.start_def?("definite == true ")
-  end
-
-
-  def test_start_def_true_inline
-    assert TestUnitMethod.start_def?(" def timestwo(i); i * 2; end ")
-  end
-
-  def test_end_def_true_inline
-    assert TestUnitMethod.end_def?(" def timestwo(i); i * 2; end ")
-  end
-
-  def test_end_def_true_whitespace
-    assert TestUnitMethod.end_def?(" end ")
-  end
-
   def test_name_uppercase
     @method.name = "MYMETHOD"
     assert_equal("test_mymethod", @method.name)
@@ -172,7 +144,7 @@ class TestUnitMethodTest < Test::Unit::TestCase
 
 
 
-#  def test_text_split_statements_into_lines      todo
+#  def test_text_split_expressions_into_lines      todo
 #    @method << "a = 1; a + 1"
 #    assert_equal "def test_1\n    a = 1\n    assert_equal(2, a + 1)\n  end", @method.text
 #  end
@@ -181,14 +153,14 @@ class TestUnitMethodTest < Test::Unit::TestCase
     @method << "a = 1"
     @method << "2b" # syntax error, unexpected tIDENTIFIER, expecting $end
     @method << "a += 1"
-    assert_equal "  def test_1\n    a = 1\n    assert_equal(2, a += 1)\n  end\n\n", @method.text
+    assert_equal "  def test_1\n    a = 1\n      # 2b   # butterfly_net: Could not evaluate.\n    assert_equal(2, a += 1)\n  end\n\n", @method.text
   end
 
   def test_purge_unexpected_identifiers
     @method << "a += 1"  # undefined method `+' for nil:NilClass
     @method << "a = 1"
     @method << "a += 1"
-    assert_equal "  def test_1\n    a = 1\n    assert_equal(2, a += 1)\n  end\n\n", @method.text
+    assert_equal "  def test_1\n      # a += 1   # butterfly_net: Could not evaluate.\n    a = 1\n    assert_equal(2, a += 1)\n  end\n\n", @method.text
   end
 
   def test_text_require
@@ -201,68 +173,68 @@ class TestUnitMethodTest < Test::Unit::TestCase
   def test_expected_boolean
     line = "1 == 1"
     @method << line
-    assert_equal("assert(#{line})", @method.assertion(0))
+    assert_equal("assert(#{line})", @method.lines[0])
   end
 
   def test_assertion_fixnum
     line = "1"
     @method << line
-    assert_equal("assert_equal(#{line}, #{line})", @method.assertion(0))
+    assert_equal("assert_equal(#{line}, #{line})", @method.lines[0])
   end
 
   def test_assertion_boolean_false
     line = "1 != 1"
     @method << line
-    assert_equal("assert_equal(false, #{line})", @method.assertion(0))
+    assert_equal("assert_equal(false, #{line})", @method.lines[0])
   end
 
   def test_array_add
     @method << "a = []"
     line2 = "a << \"1\""
     @method << line2
-    assert_equal("assert_equal([\"1\"], #{line2})", @method.assertion(1))
+    assert_equal("assert_equal([\"1\"], #{line2})", @method.lines[1])
   end
 
   def test_butterfly_net
     @method << "method = TestUnitMethod.new"
     @method << "method << \"1 + 1\""
-    assert_equal("assert_equal([\"1 + 1\"], method << \"1 + 1\")", @method.assertion(1))
+    assert_equal("assert_not_nil(method << \"1 + 1\")", @method.lines[1])
   end
 
   def test_assertion_boolean
     line = "1 == 1"
     @method << line
-    assert_equal("assert(#{line})", @method.assertion(0))
+    assert_equal("assert(#{line})", @method.lines[0])
   end
 
   def test_assertion_string
     line = "'a' + 'b'"
     @method << line
-    assert_equal("assert_equal(\"ab\", #{line})", @method.assertion(0))
+    assert_equal("assert_equal(\"ab\", #{line})", @method.lines[0])
   end
 
   def test_assertion_nil
     line = "[].first"
     @method << line
-    assert_equal("assert_nil(#{line})", @method.assertion(0))
+    assert_equal("assert_nil(#{line})", @method.lines[0])
   end
 
   def test_assertion_boolean
     line = "1 == 1"
     @method << line
-    assert_equal("assert(#{line})", @method.assertion(0))
+    assert_equal("assert(#{line})", @method.lines[0])
   end
 
   def test_assertion_object_not_equal
     line = "Object.new"
     @method << line
-    assert_equal("assert_not_equal((#{line}), #{line})", @method.assertion(0))
+    assert_equal("assert_not_nil(#{line})", @method.lines[0])
   end
 
   def test_assertion_array
     line = "([1,2,3])[0..0]"
     @method << line
-    assert_equal("assert_equal([1], #{line})", @method.assertion(0))
+    assert_equal("assert_equal([1], #{line})", @method.lines[0])
   end
 
   def test_text_def_method_single_line
@@ -272,10 +244,10 @@ class TestUnitMethodTest < Test::Unit::TestCase
     assert_equal("  def timestwo(i); i * 2; end\n\n  def test_1\n    assert_equal(4, #{line})\n  end\n\n", @method.text)
   end
 
-  def test_assertion_illegal_input
+  def test_text_illegal_input
     line = "badtext"
     @method << line
-    assert_nil @method.assertion(0)
+    assert_equal "  def test_1\n      # badtext   # butterfly_net: Could not evaluate.\n  end\n\n", @method.text
   end
 
   def test_text
@@ -289,17 +261,17 @@ class TestUnitMethodTest < Test::Unit::TestCase
     assert_equal "  def test_1\n    #{line}\n  end\n\n", @method.text
   end
 
-  def test_extract_definitions_class_multiline_empty
+  def test_definitions_class_multiline_empty
     line = "class MyClass"
     line2 = "end"
     line3 = "MyClass.new"
     @method << line
     @method << line2
     @method << line3
-    assert_equal "  #{line}\n  #{line2}\n\n  def test_1\n    assert_not_equal((#{line3}), #{line3})\n  end\n\n", @method.text
+    assert_equal "  #{line}\n  #{line2}\n\n  def test_1\n    assert_not_nil(#{line3})\n  end\n\n", @method.text
   end
 
-  def test_extract_definitions_class_with_method
+  def test_definitions_class_with_method
     @method << "class MyClass"
     @method << "def name"
     @method << "\"classy\""
@@ -311,8 +283,11 @@ class TestUnitMethodTest < Test::Unit::TestCase
 
   def test_text_bad_input_constant
     @method << "BADCONSTANT"
-    assert_nil @method.text
+    assert_equal "  def test_1\n      # BADCONSTANT   # butterfly_net: Could not evaluate.\n  end\n\n", @method.text
   end
+
+
+
   # non-project tests (scratchpad)
 
   def test_eval_scope

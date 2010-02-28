@@ -2,6 +2,7 @@ require "test/unit"
 $: << File.expand_path(File.dirname(__FILE__))
 $: << File.join(File.expand_path(File.dirname(__FILE__)), File.join("..", "lib"))
 require "butterfly_net/file_writer"
+require "butterfly_net/definitions"
 require "butterfly_net/test_unit_method"
 require "butterfly_net/test_unit_adapter"
 require "butterfly_net/rails_test_unit_adapter"
@@ -105,7 +106,7 @@ class TestCaseTest < Test::Unit::TestCase
   def test_test_methods_bad_input
     @adapter.add_command("BADCOMMAND")
     @adapter.close_assertion_set
-    assert_nil @adapter.test_methods.first
+    assert_equal "  def test_1\n      # BADCOMMAND   # butterfly_net: Could not evaluate.\n  end\n\n", @adapter.test_methods.first
   end
   
   def test_create_file
