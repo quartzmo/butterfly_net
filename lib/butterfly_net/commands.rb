@@ -11,9 +11,9 @@ module ButterflyNet
   module Commands
 
     def bn_open(file_name=nil)
-      @file_writer.close if @file_writer
-      @file_writer = ReadlineReader.new(file_name)
-      Kernel.at_exit { puts @file_writer.close if @file_writer; @file_writer = nil }
+      @readline_reader.close if @readline_reader
+      @readline_reader = ReadlineReader.new(file_name)
+      Kernel.at_exit { puts @readline_reader.close if @readline_reader; @readline_reader = nil }
       true
     rescue Exception => e
       puts e
@@ -22,9 +22,9 @@ module ButterflyNet
     end
 
     def bn_close
-      if @file_writer
-        status = @file_writer.close
-        @file_writer = nil
+      if @readline_reader
+        status = @readline_reader.close
+        @readline_reader = nil
         status
       else
         puts "butterfly_net: First invoke 'bn' or 'bn_open' to begin a session"
@@ -33,8 +33,8 @@ module ButterflyNet
     end
 
     def bn_method(method_name=nil)
-      if @file_writer
-        @file_writer.new_assertion_set(method_name)
+      if @readline_reader
+        @readline_reader.new_assertion_set(method_name)
       else
         puts "butterfly_net: First invoke 'bn' or 'bn_open' to begin a session"
         false
