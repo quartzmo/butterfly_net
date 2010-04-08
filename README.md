@@ -2,7 +2,6 @@ Butterfly Net
 =============
 
 
-Author: Chris Smith (quartzmo -at- gmail.com)
 
 [Home page and source download](http://github.com/quartzmo/butterfly_net)
 
@@ -123,6 +122,16 @@ For example:
     1 tests, 1 assertions, 0 failures, 0 errors
 
 
+## To-do List
+
+1. Improve overall stability (probably an on-going, long-term todo, but we can always hope).
+2. Support multi-line blocks.
+3. Write tests to file immediately rather than upon exit.
+4. Support expected errors with assert_raises.
+5. Provide an 'oops' shortcut method to capture unexpected errors in failing tests.
+6. Compare complex objects by value.
+
+
 ## Known Issues
 
 This section covers issues which may not be resolved quickly. Feel free to lend a hand!
@@ -172,6 +181,14 @@ Maybe someone can suggest how Butterfly Net can become just enough of an actual 
 In the meantime, just put assignments (and anything that looks like an assignment) on separate lines 
 from the expressions you want to be tested.
 
+
+## Credits
+
+Chris Smith (quartzmo -at- gmail.com)
+
+With contributions from:
+
+Caleb Clausen
 
 ## Story
 
