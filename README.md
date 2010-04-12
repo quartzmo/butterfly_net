@@ -184,11 +184,9 @@ from the expressions you want to be tested.
 
 ## Credits
 
-Chris Smith (quartzmo -at- gmail.com)
+[Chris Smith](http://github.com/quartzmo) (quartzmo -at- gmail.com)
 
-With contributions from:
-
-Caleb Clausen
+[Caleb Clausen](http://github.com/quartzmo)
 
 ## Story
 
@@ -210,7 +208,17 @@ kicking the tires and banging on the doors. With JUnit, any interesting behavior
 test, and was duly added to the suite. With IRB? Gone, flown off into the deep blue yonder. The idea for Butterfly Net
 occurred to me pretty quickly. That's the story, so far. I'm not sure how others will use Butterfly Net, but I don't
 want to limit the possibilities. Should it become more generalized and flexible, something of a view framework like
-[Hirb](http://github.com/cldwalker/hirb)? Or did I re-invent something that already existed? 
+[Hirb](http://github.com/cldwalker/hirb)? Or did I re-invent something that already existed?
+
+UPDATE (4/12/2010)
+
+It was done before.
+
+After a short demo of Butterfly Net at [MountainWest RubyConf](http://mtnwestrubyconf.org), I was approached by
+[Caleb Clausen](http://github.com/quartzmo), who offered to help with the project. Years ago, Caleb wrote a similar library for
+his own use, IRBTrack, which was much more sophisticated than the current implementation of Butterfly Net. He had never
+released IRBTrack and believed it to have been lost forever, but recently he found the code and shared it with me. The
+next version of Butterfly Net will be a merge of the two projects, and I am happy to have Caleb join me as a contributor to Butterfly Net.
 
 Please send comments and suggestions to quartzmo -at- gmail.com
 
