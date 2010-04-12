@@ -186,7 +186,7 @@ from the expressions you want to be tested.
 
 [Chris Smith](http://github.com/quartzmo) (quartzmo -at- gmail.com)
 
-[Caleb Clausen](http://github.com/quartzmo)
+[Caleb Clausen](http://github.com/coatl)
 
 ## Story
 
@@ -215,7 +215,7 @@ UPDATE (4/12/2010)
 It was done before.
 
 After a short demo of Butterfly Net at [MountainWest RubyConf](http://mtnwestrubyconf.org), I was approached by
-[Caleb Clausen](http://github.com/quartzmo), who offered to help with the project. Years ago, Caleb wrote a similar library for
+[Caleb Clausen](http://github.com/coatl), who offered to help with the project. Years ago, Caleb wrote a similar library for
 his own use, IRBTrack, which was much more sophisticated than the current implementation of Butterfly Net. He had never
 released IRBTrack and believed it to have been lost forever, but recently he found the code and shared it with me. The
 next version of Butterfly Net will be a merge of the two projects, and I am happy to have Caleb join me as a contributor to Butterfly Net.
