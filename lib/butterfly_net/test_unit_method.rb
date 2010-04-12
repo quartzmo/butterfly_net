@@ -12,21 +12,21 @@ module ButterflyNet
 
     def <<(line)
       unless @definitions << line
-        begin
-          code = @definitions.to_s + @commands.join("\n") + "\n" + line
-          retval = eval code
-          @commands << line    # todo replace def handling below with definitions (work in progress)
+        #begin
+          #code = @definitions.to_s + @commands.join("\n") + "\n" + line
+          #retval = eval code
+          #@commands << line    # todo replace def handling below with definitions (work in progress)
           @lines << final_line_string(line, retval)
-        rescue Exception
-          @commands << "# #{line}   # butterfly_net: Could not evaluate."
-          @lines << "  # #{line}   # butterfly_net: Could not evaluate."
-        end
+        #rescue Exception
+          #@commands << "# #{line}   # butterfly_net: Could not evaluate."
+        #  @lines << "# #{line}   # butterfly_net: Could not evaluate."
+        #end
       end
       self
     end
 
     def empty?
-      @commands.empty?
+      @lines.empty?
     end
 
     def name=(name)
@@ -39,25 +39,24 @@ module ButterflyNet
     end
 
     def text
-      lines_string = @lines.inject("") {|result, e| result += "    #{e}\n" if e; result}
-      lines_string.empty? ? nil : "#{@definitions.to_s}  def #{@name}\n#{lines_string}  end\n\n"
+      @name = "test_1"
+      lines_string= @lines.map{|line| line[1]%[line[0]?line[2]:line[3],line[4],line[5]]}.join("\n")
+      #lines_string = @lines.compact.inject("") {|result, e| result += "    #{e}\n" }
+      lines_string.empty? ? nil : "#{@definitions}  def #{@name}\n#{lines_string}  end\n\n"
+    end
+    def oops
+
+      @lines[-1][0]=false
     end
 
-    def final_line_string(current_line, retval)
-      if TestUnitMethod.assignment_or_require?(current_line)
-        current_line
-      elsif instances_equal_by_value?(retval) # expression result supports value equality
-
-        if retval == true # use simple assert() for true boolean expressions
-          "assert(#{current_line})"
-        elsif retval.nil?
-          "assert_nil(#{current_line})"
-        else
-          "assert_equal(#{retval.inspect}, #{current_line})"
-        end
+    def write_assertion(fmt, positive, negative, expr,value)
+      if @definitions << [true,"%s",expr]
+      elsif TestUnitMethod.assignment_or_require?(expr)
+        @lines << [true,"%s",expr]
       else
-        # any other sort of object is handled as a not equal assertion
-        "assert_not_nil(#{current_line})"    # todo assert_not_nil in some cases?
+
+
+          @lines << [true,fmt,positive,negative,expr,value]
       end
     end
 

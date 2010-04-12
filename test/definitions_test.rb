@@ -54,6 +54,12 @@ class DefinitionsTest < Test::Unit::TestCase
     assert_equal(["  class MyClass\n", "  end\n\n"], @definitions.lines)
   end
 
+  def test_definitions_block
+    @definitions << "5.times do"
+    @definitions << "end"
+    assert @definitions.empty?
+  end
+
   def test_to_s_method_inline
     @definitions << "def timestwo(i); i * 2; end"
     assert_equal("  def timestwo(i); i * 2; end\n\n", @definitions.to_s)

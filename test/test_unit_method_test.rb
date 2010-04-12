@@ -153,14 +153,14 @@ class TestUnitMethodTest < Test::Unit::TestCase
     @method << "a = 1"
     @method << "2b" # syntax error, unexpected tIDENTIFIER, expecting $end
     @method << "a += 1"
-    assert_equal "  def test_1\n    a = 1\n      # 2b   # butterfly_net: Could not evaluate.\n    assert_equal(2, a += 1)\n  end\n\n", @method.text
+    assert_equal "  def test_1\n    a = 1\n    # 2b   # butterfly_net: Could not evaluate.\n    assert_equal(2, a += 1)\n  end\n\n", @method.text
   end
 
   def test_purge_unexpected_identifiers
     @method << "a += 1"  # undefined method `+' for nil:NilClass
     @method << "a = 1"
     @method << "a += 1"
-    assert_equal "  def test_1\n      # a += 1   # butterfly_net: Could not evaluate.\n    a = 1\n    assert_equal(2, a += 1)\n  end\n\n", @method.text
+    assert_equal "  def test_1\n    # a += 1   # butterfly_net: Could not evaluate.\n    a = 1\n    assert_equal(2, a += 1)\n  end\n\n", @method.text
   end
 
   def test_text_require
@@ -247,7 +247,7 @@ class TestUnitMethodTest < Test::Unit::TestCase
   def test_text_illegal_input
     line = "badtext"
     @method << line
-    assert_equal "  def test_1\n      # badtext   # butterfly_net: Could not evaluate.\n  end\n\n", @method.text
+    assert_equal "  def test_1\n    # badtext   # butterfly_net: Could not evaluate.\n  end\n\n", @method.text
   end
 
   def test_text
@@ -259,6 +259,28 @@ class TestUnitMethodTest < Test::Unit::TestCase
     line = "a = 1"
     @method << line
     assert_equal "  def test_1\n    #{line}\n  end\n\n", @method.text
+  end
+
+
+
+  def test_text_block_using_variable
+    @method << "a = 5"
+    @method << "b = 0"
+    @method << "a.times do"
+    @method << "b += 1"
+    @method << "end"
+    @method << "b"
+    expected = <<-EOF
+  def test_1
+    a = 5
+    b = 0
+    a.times do
+      b += 1
+    end
+    assert_equal(b, 5)
+  end
+    EOF
+    assert_equal expected, @method.text
   end
 
   def test_definitions_class_multiline_empty
@@ -283,7 +305,7 @@ class TestUnitMethodTest < Test::Unit::TestCase
 
   def test_text_bad_input_constant
     @method << "BADCONSTANT"
-    assert_equal "  def test_1\n      # BADCONSTANT   # butterfly_net: Could not evaluate.\n  end\n\n", @method.text
+    assert_equal "  def test_1\n    # BADCONSTANT   # butterfly_net: Could not evaluate.\n  end\n\n", @method.text
   end
 
 

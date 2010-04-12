@@ -106,7 +106,7 @@ class TestCaseTest < Test::Unit::TestCase
   def test_test_methods_bad_input
     @adapter.add_command("BADCOMMAND")
     @adapter.close_assertion_set
-    assert_equal "  def test_1\n      # BADCOMMAND   # butterfly_net: Could not evaluate.\n  end\n\n", @adapter.test_methods.first
+    assert_equal "  def test_1\n    # BADCOMMAND   # butterfly_net: Could not evaluate.\n  end\n\n", @adapter.test_methods.first
   end
   
   def test_create_file
