@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'irb'
+require "butterfly_net"
+require "irb_workspace"
+
+IRB.start(__FILE__)
