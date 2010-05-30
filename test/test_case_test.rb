@@ -12,7 +12,7 @@ class TestCaseTest < Test::Unit::TestCase
   include ButterflyNet
   
   def setup
-    @adapter = TestCase.new
+    @test_case = TestCase.new
   end
 
   def teardown
@@ -24,35 +24,35 @@ class TestCaseTest < Test::Unit::TestCase
   end
 
   def test_test_methods_single
-    @adapter.add_command("1 + 1")
+    @test_case.add_command("1 + 1", 2)
     expected = "  def test_1\n    assert_equal(2, 1 + 1)\n  end\n\n"
-    assert_equal expected, @adapter.test_methods.first
+    assert_equal expected, @test_case.test_methods.first
   end
 
   def test_test_methods_2_assertions_1_method
-    @adapter.add_command("1 + 1")
-    @adapter.add_command("1 + 2")
+    @test_case.add_command("1 + 1", 2)
+    @test_case.add_command("1 + 2", 3)
     expected = "  def test_1\n    assert_equal(2, 1 + 1)\n    assert_equal(3, 1 + 2)\n  end\n\n"
-    assert_equal expected, @adapter.test_methods.last
+    assert_equal expected, @test_case.test_methods.last
   end
 
   def test_test_methods_variable_in_assertion
-    @adapter.add_command("a = 1")
-    @adapter.add_command("a + 2")
+    @test_case.add_command("a = 1", 1)
+    @test_case.add_command("a + 2", 3)
     expected = "  def test_1\n    a = 1\n    assert_equal(3, a + 2)\n  end\n\n"
-    assert_equal expected, @adapter.test_methods.last
+    assert_equal expected, @test_case.test_methods.last
   end
 
   def test_test_methods_require
-    @adapter.add_command("require 'bigdecimal'")
-    @adapter.add_command("BigDecimal(\"1.0\") - 0.5")
+    @test_case.add_command("require 'bigdecimal'", true)
+    @test_case.add_command("BigDecimal(\"1.0\") - 0.5", 0.5)    # result class really is Float
     expected = "  def test_1\n    require 'bigdecimal'\n    assert_equal(0.5, BigDecimal(\"1.0\") - 0.5)\n  end\n\n"
-    assert_equal expected, @adapter.test_methods.last
+    assert_equal expected, @test_case.test_methods.last
   end
 
   def test_test_methods_def_method_single_inline
-    @adapter.add_command("def timestwo(i); i * 2; end")
-    @adapter.add_command("timestwo(4)")
+    @test_case.add_command("def timestwo(i); i * 2; end", nil)
+    @test_case.add_command("timestwo(4)", 8)
     expected = <<-EOF
   def timestwo(i); i * 2; end
 
@@ -61,14 +61,14 @@ class TestCaseTest < Test::Unit::TestCase
   end
 
     EOF
-    assert_equal expected, @adapter.generate_bodytext
+    assert_equal expected, @test_case.generate_bodytext
   end
 
   def test_test_methods_def_methods_two_inline
-    @adapter.add_command("def timestwo(i); i * 2; end")
-    @adapter.add_command("def timesfour(i); timestwo(i) * timestwo(i); end")
-    @adapter.add_command("timestwo(1)")
-    @adapter.add_command("timesfour(1)")
+    @test_case.add_command("def timestwo(i); i * 2; end", nil)
+    @test_case.add_command("def timesfour(i); timestwo(i) * timestwo(i); end", nil)
+    @test_case.add_command("timestwo(1)", 2)
+    @test_case.add_command("timesfour(1)", 4)
     expected = <<-EOF
   def timestwo(i); i * 2; end
 
@@ -80,37 +80,42 @@ class TestCaseTest < Test::Unit::TestCase
   end
 
     EOF
-    assert_equal expected, @adapter.generate_bodytext
+    assert_equal expected, @test_case.generate_bodytext
   end
 
   def test_test_methods_numbering_first_method
-    @adapter.add_command("1 + 1")
-    @adapter.close_assertion_set
-    @adapter.add_command("1 + 2")
-    assert_equal "  def test_1\n    assert_equal(2, 1 + 1)\n  end\n\n", @adapter.test_methods.first
+    @test_case.add_command("1 + 1", 2)
+    @test_case.close_assertion_set
+    @test_case.add_command("1 + 2", 3)
+    assert_equal "  def test_1\n    assert_equal(2, 1 + 1)\n  end\n\n", @test_case.test_methods.first
   end       
 
   def test_test_methods_numbering_second_method
-    @adapter.add_command("1 + 1")
-    @adapter.close_assertion_set
-    @adapter.add_command("1 + 2")
-    assert_equal "  def test_2\n    assert_equal(3, 1 + 2)\n  end\n\n", @adapter.test_methods.last
+    @test_case.add_command("1 + 1", 2)
+    @test_case.close_assertion_set
+    @test_case.add_command("1 + 2", 3)
+    assert_equal "  def test_2\n    assert_equal(3, 1 + 2)\n  end\n\n", @test_case.test_methods.last
   end
 
   def test_test_methods_naming
-    @adapter.add_command("1 + 1")
-    @adapter.close_assertion_set 'test_one_plus_one'
-    assert_equal "  def test_one_plus_one\n    assert_equal(2, 1 + 1)\n  end\n\n", @adapter.test_methods.first
+    @test_case.add_command("1 + 1", 2)
+    @test_case.close_assertion_set 'test_one_plus_one'
+    assert_equal "  def test_one_plus_one\n    assert_equal(2, 1 + 1)\n  end\n\n", @test_case.test_methods.first
   end
 
   def test_test_methods_bad_input
-    @adapter.add_command("BADCOMMAND")
-    @adapter.close_assertion_set
-    assert_equal "  def test_1\n      # BADCOMMAND   # butterfly_net: Could not evaluate.\n  end\n\n", @adapter.test_methods.first
+    @test_case.add_command("BADCOMMAND", nil, NameError.new("exception message"))
+    @test_case.close_assertion_set
+    assert_equal "  def test_1\n    # BADCOMMAND   # NameError: exception message\n  end\n\n", @test_case.test_methods.first
+  end
+
+  def test_empty_false
+    @test_case.add_command("1 + 1", 2)
+    assert !@test_case.empty?
   end
   
   def test_create_file
-    @adapter.add_command("1 + 1")
+    @test_case.add_command("1 + 1", 2)
     expected  = <<-EOF
 require "test/unit"
 
@@ -123,7 +128,7 @@ class MyTest < Test::Unit::TestCase
 
 end
     EOF
-    @adapter.create_file('temp_test.rb')   # todo: write to memory instead of file...
+    @test_case.create_file('temp_test.rb')   # todo: write to memory instead of file...
     assert_equal expected, File.open('temp_test.rb').readlines.join('')
   end
 

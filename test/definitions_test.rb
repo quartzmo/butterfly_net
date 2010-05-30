@@ -1,6 +1,7 @@
 require "test/unit"
 $: << File.expand_path(File.dirname(__FILE__))
 $: << File.join(File.expand_path(File.dirname(__FILE__)), File.join("..", "lib"))
+require "rbeautify"
 require "butterfly_net/definitions"
 
 class DefinitionsTest < Test::Unit::TestCase
@@ -47,11 +48,9 @@ class DefinitionsTest < Test::Unit::TestCase
   end
 
   def test_definitions_class_empty
-    line = "class MyClass"
-    line2 = "end"
+    line = "class MyClass\nend"
     @definitions << line
-    @definitions << line2
-    assert_equal(["  class MyClass\n", "  end\n\n"], @definitions.lines)
+    assert_equal(["  class MyClass\n  end\n\n"], @definitions.lines)
   end
 
   def test_to_s_method_inline
@@ -60,11 +59,7 @@ class DefinitionsTest < Test::Unit::TestCase
   end
 
   def test_to_s_class_with_method
-    @definitions << "class MyClass"
-    @definitions << "def name"
-    @definitions << "\"classy\""
-    @definitions << "end"
-    @definitions << "end"
+    @definitions << "class MyClass\ndef name\n\"classy\"\nend\nend"
     assert_equal "  class MyClass\n    def name\n      \"classy\"\n    end\n  end\n\n", @definitions.to_s
   end
 

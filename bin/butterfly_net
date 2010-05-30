@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+libdir = File.join( File.dirname(__FILE__), '..', 'lib')
+require 'rubygems'
+require 'irb'
+require File.join(libdir, 'butterfly_net')
+require File.join(libdir, 'workspace')
+
+IRB.start(__FILE__)

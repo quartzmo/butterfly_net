@@ -9,8 +9,8 @@ module ButterflyNet
       @assertion_sets = [@adapter.test_method]
     end
 
-    def add_command(line)
-      @assertion_sets.last << line
+    def add_command(line, result, exception=nil)
+      @assertion_sets.last.write_expression line, result, exception
     end
 
     # user provides name at closing
@@ -21,6 +21,11 @@ module ButterflyNet
 
     # true if ALL are empty
     def empty?
+
+
+      puts "@assertion_sets.first: #{@assertion_sets.first}"
+      puts "@assertion_sets.first.empty: #{@assertion_sets.first.empty?}"
+
       @assertion_sets.inject(true) {|result,e| result = (result and e.empty?); result}
     end
 

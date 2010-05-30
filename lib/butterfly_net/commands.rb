@@ -11,21 +11,33 @@ module ButterflyNet
   module Commands
 
     def bn_open(file_name=nil)
-      @readline_reader.close if @readline_reader
-      @readline_reader = ReadlineReader.new(file_name)
-      Kernel.at_exit { puts @readline_reader.close if @readline_reader; @readline_reader = nil }
-      true
+      # @readline_reader.close if @readline_reader
+      if file_name
+        @file_name = file_name.to_s + ".rb" unless file_name.to_s =~ /.rb$/
+      else
+        @file_name = "butterfly_net_#{Time.now.strftime("%Y%m%d%H%M%S")}.rb"  # todo: something like heroku's generated names
+      end
+      @test_case = TestCase.new
+      Kernel.at_exit { puts bn_close if @test_case; @test_case = nil }
+      @test_case
     rescue Exception => e
       puts e
       puts e.backtrace
-      false
+      nil
     end
 
     def bn_close
-      if @readline_reader
-        status = @readline_reader.close
-        @readline_reader = nil
-        status
+      if @test_case
+        begin
+          result = @test_case.create_file(@file_name)
+          puts result ? "butterfly_net: #{@file_name} created." : "butterfly_net: #{@file_name} was not created. No tests were generated from this session."
+          @test_case = nil
+          result
+        rescue Exception => e
+          puts "butterfly_net:  Error generating tests: #{e}"
+          puts e.backtrace
+          false
+        end
       else
         puts "butterfly_net: First invoke 'bn' or 'bn_open' to begin a session"
         false
@@ -33,8 +45,14 @@ module ButterflyNet
     end
 
     def bn_method(method_name=nil)
-      if @readline_reader
-        @readline_reader.new_assertion_set(method_name)
+      if @test_case
+        begin
+          @test_case.close_assertion_set(method_name)
+        rescue Exception => e
+          puts "butterfly_net:  Error generating tests: #{e}"
+          puts e.backtrace
+          false
+        end
       else
         puts "butterfly_net: First invoke 'bn' or 'bn_open' to begin a session"
         false
