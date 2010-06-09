@@ -196,9 +196,9 @@ class TestUnitMethodTest < Test::Unit::TestCase
   end
 
   def test_butterfly_net
-    @method.write_expression "method = TestUnitMethod.new", nil   # todo: replace nil with real result, or result.inspect
-    @method.write_expression "method.write_expression(\"1 + 1\")", "assert_not_nil(method.write_expression(\"1 + 1\"))"
-    assert_equal("assert_not_nil(method.write_expression(\"1 + 1\"))", @method.lines[1])
+    @method.write_expression "method = ButterflyNet::TestUnitMethod.new", nil   # todo: replace nil with real result, or result.inspect
+    @method.write_expression "method.write_expression(\"1 + 1\").lines[0]", "assert_equal(2, 1 + 1)"
+    assert_equal("assert_equal(\"assert_equal(2, 1 + 1)\", method.write_expression(\"1 + 1\").lines[0])", @method.lines[1])
   end
 
   def test_assertion_boolean
@@ -281,12 +281,14 @@ class TestUnitMethodTest < Test::Unit::TestCase
     assert_equal expected, @method.text
   end
 
+  class MyKlass; end
   def test_definitions_class_multiline_empty
-    line = "class MyClass"
+
+    line = "class MyKlass"
     line2 = "end"
-    line3 = "MyClass.new"
+    line3 = "MyKlass.new"
     @method.write_expression line + "\n" + line2, nil
-    @method.write_expression line, nil   # todo: replace nil with real result, or result.inspect
+    @method.write_expression line3, MyKlass.new   # todo: replace nil with real result, or result.inspect
     assert_equal "  #{line}\n  #{line2}\n\n  def test_1\n    assert_not_nil(#{line3})\n  end\n\n", @method.text
   end
 
