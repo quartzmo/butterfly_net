@@ -21,11 +21,6 @@ module ButterflyNet
 
     # true if ALL are empty
     def empty?
-
-
-      puts "@assertion_sets.first: #{@assertion_sets.first}"
-      puts "@assertion_sets.first.empty: #{@assertion_sets.first.empty?}"
-
       @assertion_sets.inject(true) {|result,e| result = (result and e.empty?); result}
     end
 

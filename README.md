@@ -124,12 +124,12 @@ For example:
 
 ## To-do List
 
-1. Improve overall stability (probably an on-going, long-term todo, but we can always hope).
-2. Support multi-line blocks.
-3. Write tests to file immediately rather than upon exit.
-4. Support expected errors with assert_raises.
-5. Provide an 'oops' shortcut method to capture unexpected errors in failing tests.
-6. Compare complex objects by value.
+1. Write tests to file immediately rather than upon exit.
+2. Support expected errors with assert_raises.
+3. Provide an 'oops' shortcut method to capture unexpected errors in failing tests.
+4. Compare complex objects by value.
+5. Compare dates by value.
+6. Support configuration of fixtures for Rails.
 
 
 ## Known Issues

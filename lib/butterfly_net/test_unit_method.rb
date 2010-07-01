@@ -43,7 +43,7 @@ module ButterflyNet
 
     def final_line_string(current_line, result)
       if TestUnitMethod.assignment_or_require?(current_line)
-        current_line #=~ /\n.+$/m ? RBeautify.beautify_string(current_line)[0] : current_line
+        current_line =~ /\n.+$/m ? RBeautify.beautify_string(current_line, 2)[0].chomp.lstrip : current_line
       elsif instances_equal_by_value?(result) # expression result supports value equality
 
         if result == true # use simple assert() for true boolean expressions

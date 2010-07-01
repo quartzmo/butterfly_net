@@ -78,14 +78,13 @@ module RBeautify
       return line
    end
 
-   def RBeautify.beautify_string(source, path = "")
+   def RBeautify.beautify_string(source, tab = 1)
       comment_block = false
       in_here_doc = false
       here_doc_term = ""
       program_end = false
       multiLine_array = []
       multiLine_str = ""
-      tab = 1
       output = []
       source.each do |line|
          line.chomp!
@@ -179,7 +178,7 @@ module RBeautify
          end
       end
       error = (tab != 1)
-      STDERR.puts "Error: indent/outdent mismatch: #{tab}." if error
+     # STDERR.puts "Error: indent/outdent mismatch: #{tab}." if error
       return output.join("\n") + "\n",error
    end # beautify_string
 

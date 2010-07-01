@@ -275,11 +275,37 @@ class TestUnitMethodTest < Test::Unit::TestCase
     a.times do
       b += a
     end
-    assert_equal(b, 25)
+    assert_equal(25, b)
   end
+
     EOF
     assert_equal expected, @method.text
   end
+
+  def test_text_block_double_nested_do
+    @method.write_expression "a = 2", 2
+    @method.write_expression "b = 2", 2
+    @method.write_expression "c = 0", 0
+    @method.write_expression "a.times do\nb.times do\nc += 1\nend\nend", 2  #result is number of times
+    @method.write_expression "c", 4
+    expected = <<-EOF
+  def test_1
+    a = 2
+    b = 2
+    c = 0
+    a.times do
+      b.times do
+        c += 1
+      end
+    end
+    assert_equal(4, c)
+  end
+
+    EOF
+    assert_equal expected, @method.text
+  end
+
+
 
   class MyKlass; end
   def test_definitions_class_multiline_empty
