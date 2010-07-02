@@ -23,14 +23,9 @@ module ButterflyNet
     end
 
     def <<(line)
-     if Definitions.start_def?(line)
-        formatted = RBeautify.beautify_string(line)
+      if Definitions.start_def?(line)
+        formatted = RBeautify.beautify_string(line, 0)
         @lines << formatted[0] + "\n"
-        if formatted[1]
-          false
-        else
-          true
-        end
       else
         false
       end

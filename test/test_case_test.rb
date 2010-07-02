@@ -12,7 +12,7 @@ class TestCaseTest < Test::Unit::TestCase
   include ButterflyNet
   
   def setup
-    @test_case = TestCase.new
+    @test_case = TestCase.new('temp_test.rb')
   end
 
   def teardown
@@ -54,7 +54,7 @@ class TestCaseTest < Test::Unit::TestCase
     @test_case.add_command("def timestwo(i); i * 2; end", nil)
     @test_case.add_command("timestwo(4)", 8)
     expected = <<-EOF
-  def timestwo(i); i * 2; end
+def timestwo(i); i * 2; end
 
   def test_1
     assert_equal(8, timestwo(4))
@@ -70,9 +70,9 @@ class TestCaseTest < Test::Unit::TestCase
     @test_case.add_command("timestwo(1)", 2)
     @test_case.add_command("timesfour(1)", 4)
     expected = <<-EOF
-  def timestwo(i); i * 2; end
+def timestwo(i); i * 2; end
 
-  def timesfour(i); timestwo(i) * timestwo(i); end
+def timesfour(i); timestwo(i) * timestwo(i); end
 
   def test_1
     assert_equal(2, timestwo(1))
@@ -127,6 +127,74 @@ class MyTest < Test::Unit::TestCase
   end
 
 end
+    EOF
+    @test_case.create_file('temp_test.rb')   # todo: write to memory instead of file...
+    assert_equal expected, File.open('temp_test.rb').readlines.join('')
+  end
+
+  def test_create_file_with_2_methods
+    @test_case.add_command("1 + 1", 2)
+    @test_case.close_assertion_set('first')
+    @test_case.add_command("1 + 2", 3)
+    expected  = <<-EOF
+require "test/unit"
+
+# IRB test capture courtesy of butterfly_net (butterflynet.org)
+class MyTest < Test::Unit::TestCase
+
+  def test_1
+    assert_equal(2, 1 + 1)
+  end
+
+  def test_2
+    assert_equal(3, 1 + 2)
+  end
+
+end
+    EOF
+    @test_case.create_file('temp_test.rb')   # todo: write to memory instead of file...
+    assert_equal expected, File.open('temp_test.rb').readlines.join('')
+  end
+
+  def test_create_file_single_test_method_two_lines
+    @test_case.add_command("a = 1", 1)
+    @test_case.add_command("a + 2", 3)
+    expected  = <<-EOF
+require "test/unit"
+
+# IRB test capture courtesy of butterfly_net (butterflynet.org)
+class MyTest < Test::Unit::TestCase
+
+  def test_1
+    a = 1
+    assert_equal(3, a + 2)
+  end
+
+end
+    EOF
+    @test_case.create_file('temp_test.rb')   # todo: write to memory instead of file...
+    assert_equal expected, File.open('temp_test.rb').readlines.join('')
+  end
+
+  def test_create_file_definitions
+    @test_case.add_command("class Mine\nend", nil)
+    @test_case.add_command("Mine.new.class.to_s", "Mine")
+    expected  = <<-EOF
+require "test/unit"
+
+# IRB test capture courtesy of butterfly_net (butterflynet.org)
+class MyTest < Test::Unit::TestCase
+
+  def test_1
+    assert_equal("Mine", Mine.new.class.to_s)
+  end
+
+end
+
+# definitions
+class Mine
+end
+
     EOF
     @test_case.create_file('temp_test.rb')   # todo: write to memory instead of file...
     assert_equal expected, File.open('temp_test.rb').readlines.join('')

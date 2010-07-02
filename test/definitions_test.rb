@@ -44,23 +44,23 @@ class DefinitionsTest < Test::Unit::TestCase
   def test_definitions_inline
     line = "def timestwo(i); i * 2; end"
     @definitions << line
-    assert @definitions.lines.include?("  def timestwo(i); i * 2; end\n\n")
+    assert @definitions.lines.include?("def timestwo(i); i * 2; end\n\n")
   end
 
   def test_definitions_class_empty
     line = "class MyClass\nend"
     @definitions << line
-    assert_equal(["  class MyClass\n  end\n\n"], @definitions.lines)
+    assert_equal(["class MyClass\nend\n\n"], @definitions.lines)
   end
 
   def test_to_s_method_inline
     @definitions << "def timestwo(i); i * 2; end"
-    assert_equal("  def timestwo(i); i * 2; end\n\n", @definitions.to_s)
+    assert_equal("def timestwo(i); i * 2; end\n\n", @definitions.to_s)
   end
 
   def test_to_s_class_with_method
     @definitions << "class MyClass\ndef name\n\"classy\"\nend\nend"
-    assert_equal "  class MyClass\n    def name\n      \"classy\"\n    end\n  end\n\n", @definitions.to_s
+    assert_equal "class MyClass\n  def name\n    \"classy\"\n  end\nend\n\n", @definitions.to_s
   end
 
 # todo write tests breaking assumption that definitions are valid code, and impl separate eval's for definitions

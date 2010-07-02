@@ -241,7 +241,7 @@ class TestUnitMethodTest < Test::Unit::TestCase
     @method.write_expression "def timestwo(i); i * 2; end", nil
     line = "timestwo(2)"
     @method.write_expression line, 4
-    assert_equal("  def timestwo(i); i * 2; end\n\n  def test_1\n    assert_equal(4, #{line})\n  end\n\n", @method.text)
+    assert_equal("def timestwo(i); i * 2; end\n\n  def test_1\n    assert_equal(4, #{line})\n  end\n\n", @method.text)
   end
 
   def test_text_illegal_input
@@ -315,13 +315,13 @@ class TestUnitMethodTest < Test::Unit::TestCase
     line3 = "MyKlass.new"
     @method.write_expression line + "\n" + line2, nil
     @method.write_expression line3, MyKlass.new   # todo: replace nil with real result, or result.inspect
-    assert_equal "  #{line}\n  #{line2}\n\n  def test_1\n    assert_not_nil(#{line3})\n  end\n\n", @method.text
+    assert_equal "#{line}\n#{line2}\n\n  def test_1\n    assert_not_nil(#{line3})\n  end\n\n", @method.text
   end
 
   def test_definitions_class_with_method
     @method.write_expression "class MyClass\ndef name\n\"classy\"\nend\nend", nil
     @method.write_expression "MyClass.new.name", "classy"
-    assert_equal "  class MyClass\n    def name\n      \"classy\"\n    end\n  end\n\n  def test_1\n    assert_equal(\"classy\", MyClass.new.name)\n  end\n\n", @method.text
+    assert_equal "class MyClass\n  def name\n    \"classy\"\n  end\nend\n\n  def test_1\n    assert_equal(\"classy\", MyClass.new.name)\n  end\n\n", @method.text
   end
 
   def test_text_bad_input_constant

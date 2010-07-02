@@ -17,7 +17,7 @@ module ButterflyNet
       else
         @file_name = "butterfly_net_#{Time.now.strftime("%Y%m%d%H%M%S")}.rb"  # todo: something like heroku's generated names
       end
-      @test_case = TestCase.new
+      @test_case = TestCase.new(@file_name)
       Kernel.at_exit { puts bn_close if @test_case; @test_case = nil }
       @test_case
     rescue Exception => e

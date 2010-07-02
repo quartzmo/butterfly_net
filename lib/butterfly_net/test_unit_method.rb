@@ -36,9 +36,21 @@ module ButterflyNet
       line =~ /require\s*['|"]\w+['|"]|[^=<>!*%\/+-\\|&]=[^=~]|.*do\s+/
     end
 
+    def lines_text
+      @lines.inject("") { |result, e| result += "    #{e}\n" if e; result }
+    end
+
+    def opening_text
+      "  def #{@name}\n"
+    end
+
+    def closing_text
+      "  end\n\n"
+    end
+
     def text
-      lines_string = @lines.inject("") { |result, e| result += "    #{e}\n" if e; result }
-      lines_string.empty? ? nil : "#{@definitions.to_s}  def #{@name}\n#{lines_string}  end\n\n"
+      lines_string = lines_text
+      lines_string.empty? ? nil : "#{@definitions.to_s}#{opening_text}#{lines_string}#{closing_text}"
     end
 
     def final_line_string(current_line, result)
