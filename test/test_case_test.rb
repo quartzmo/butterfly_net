@@ -50,39 +50,6 @@ class TestCaseTest < Test::Unit::TestCase
     assert_equal expected, @test_case.test_methods.last
   end
 
-  def test_test_methods_def_method_single_inline
-    @test_case.add_command("def timestwo(i); i * 2; end", nil)
-    @test_case.add_command("timestwo(4)", 8)
-    expected = <<-EOF
-def timestwo(i); i * 2; end
-
-  def test_1
-    assert_equal(8, timestwo(4))
-  end
-
-    EOF
-    assert_equal expected, @test_case.generate_bodytext
-  end
-
-  def test_test_methods_def_methods_two_inline
-    @test_case.add_command("def timestwo(i); i * 2; end", nil)
-    @test_case.add_command("def timesfour(i); timestwo(i) * timestwo(i); end", nil)
-    @test_case.add_command("timestwo(1)", 2)
-    @test_case.add_command("timesfour(1)", 4)
-    expected = <<-EOF
-def timestwo(i); i * 2; end
-
-def timesfour(i); timestwo(i) * timestwo(i); end
-
-  def test_1
-    assert_equal(2, timestwo(1))
-    assert_equal(4, timesfour(1))
-  end
-
-    EOF
-    assert_equal expected, @test_case.generate_bodytext
-  end
-
   def test_test_methods_numbering_first_method
     @test_case.add_command("1 + 1", 2)
     @test_case.close_assertion_set
@@ -194,6 +161,59 @@ end
 # definitions
 class Mine
 end
+
+    EOF
+    @test_case.create_file('temp_test.rb')   # todo: write to memory instead of file...
+    assert_equal expected, File.open('temp_test.rb').readlines.join('')
+  end
+
+
+
+  def test_create_file_def_method_single_inline
+    @test_case.add_command("def timestwo(i); i * 2; end", nil)
+    @test_case.add_command("timestwo(4)", 8)
+    expected = <<-EOF
+require "test/unit"
+
+# IRB test capture courtesy of butterfly_net (butterflynet.org)
+class MyTest < Test::Unit::TestCase
+
+  def test_1
+    assert_equal(8, timestwo(4))
+  end
+
+end
+
+# definitions
+def timestwo(i); i * 2; end
+
+    EOF
+    @test_case.create_file('temp_test.rb')   # todo: write to memory instead of file...
+    assert_equal expected, File.open('temp_test.rb').readlines.join('')
+  end
+
+  def test_create_file_def_methods_two_inline
+    @test_case.add_command("def timestwo(i); i * 2; end", nil)
+    @test_case.add_command("def timesfour(i); timestwo(i) * timestwo(i); end", nil)
+    @test_case.add_command("timestwo(1)", 2)
+    @test_case.add_command("timesfour(1)", 4)
+    expected = <<-EOF
+require "test/unit"
+
+# IRB test capture courtesy of butterfly_net (butterflynet.org)
+class MyTest < Test::Unit::TestCase
+
+  def test_1
+    assert_equal(2, timestwo(1))
+    assert_equal(4, timesfour(1))
+  end
+
+end
+
+# definitions
+def timestwo(i); i * 2; end
+
+def timesfour(i); timestwo(i) * timestwo(i); end
 
     EOF
     @test_case.create_file('temp_test.rb')   # todo: write to memory instead of file...

@@ -44,18 +44,11 @@ module ButterflyNet
       @file.write(@adapter.footer_text + "\n")
       @file.write("\n# definitions\n#{@method.definitions}") unless @method.definitions.empty?
       @file.close
-#      bodytext = generate_bodytext
-#      return false if empty? || bodytext.empty?
-   #   FileWriter.new(filename).create_file(@adapter.header_text + bodytext + @adapter.footer_text)
     end
 
     def test_methods
       @assertion_sets.last.name = @assertion_sets.size unless @assertion_sets.last.name # assign the default, numbered name; done here for testing
       @assertion_sets.collect {|i| i.text }.compact
-    end
-
-    def generate_bodytext
-      test_methods.inject("") { |result,e|result += e; result }
     end
 
   end
